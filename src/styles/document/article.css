@@ -1,0 +1,79 @@
+/* @/styles/document/article.css */
+
+.article {
+  padding: 24px;
+}
+
+.article-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0;
+  margin-bottom: 12px;
+}
+
+.article-title h1 {
+  margin: 0;
+}
+
+.article-title_buttons {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9em;
+}
+
+/* ===== ArticleView ===== */
+
+.article-notfound {
+  color: gray;
+  margin-top: 12px;
+}
+
+.article-toc {
+  margin: 16px 0 20px;
+}
+
+.article-content {
+  margin-top: 12px;
+}
+
+/* ===== ArticleEdit ===== */
+
+.article-edit_textarea {
+  width: 100%;
+  font-family: monospace, sans-serif;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.article-edit_content {
+  height: 200px;
+  margin-top: 12px;
+}
+
+.article-edit_toc {
+  height: 100px;
+  margin-top: 12px;
+}
+
+.article-edit_save {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: #0070f3;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.article-edit_save:hover {
+  background: #0059c9;
+}
+
+.article-edit_status {
+  margin-top: 12px;
+  color: gray;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+}
