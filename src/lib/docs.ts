@@ -7,22 +7,17 @@ export type DocType =
   | "namespace"
   | "user"
   | "group"
-  | "image"
-  | "file"
   | "acl";
 
 /** Basic Documents Row Query */
-export type DocRow = {
+export type DocRaw = {
   id: number;
   sid: string;
   type: DocType;
   name: string;
+  acl_id: number | null;
   mtime: string;
   ctime: string;
-  nref: number;
-  _ref: string;
-  nlink: number;
-  _link: string;
 };
 
 export type ArticleRow = {
@@ -33,72 +28,38 @@ export type ArticleRow = {
 /* ─────────────────────────────────────────────────────────
  * Document Specified Type (discriminated union)
  * ───────────────────────────────────────────────────────── */
-type Base = DocRow & {
-  /** 정규화된 참조 정보 */
-  refs: string[];       // 내가 가리키는 sid 목록
-  links: string[];  // 나를 가리키는 sid 목록
+type Base = DocRaw & {
+  refs: string[];
+  links: string[];
 };
 
-export type Article = Base & {
-  type: "article";
+type ArticleLike = Base & {
   content_md: string;
   table_of_content: string;
-  /** namespace that `this` is included. list of `sid` */
-  namespaces: string[];
 };
 
-export type Namespace = Base & {
-  type: "namespace";
-  /** article that `this` includes. list of `sid` */
-  articles: string[];
-};
-
-export type dUser = Base & {
-  type: "user";
-  content_md: string;
-  table_of_content: string;
-  user_idx: number;
-};
-
-export type dGroup = Base & {
-  type: "group";
-  content_md: string;
-  table_of_content: string;
-  nuser: number;
-  _user: string; // ';' seperated `user_idx` list
-};
-
-export type dImage = Base & {
-  type: "image";
-  _img: string;
-};
-
-export type dFile = Base & {
-  type: "file";
-  _file: string;
-};
+export type Namespace = Base & { type: "namespace"; articles: string[] };
+export type Article = ArticleLike & { type: "article"; namespaces: string[] };
+export type dUser   = ArticleLike & { type: "user"; user_idx: number };
+export type dGroup  = ArticleLike & { type: "group"; members: number[] };
 
 export type AclEntry = {
   target_t: "user" | "group";
   target_id: number;
-  target_sid: string | null;
+  target_sid: string;
   rud_mask: number; // R=4, U=2, D=1
   allow: boolean;
 };
 
-export type dAcl = Base & {
-  type: "acl";
-  entries: AclEntry[];
-};
-
-export type Document = Article | Namespace | dUser | dGroup | dImage | dFile | dAcl;
+export type dAcl = Base & { type: "acl"; entries: AclEntry[]; };
+export type Document = Article | Namespace | dUser | dGroup | dAcl;
 
 /* ─────────────────────────────────────────────────────────
  * Lightweight Queries (Maintain)
  * ───────────────────────────────────────────────────────── */
-export async function listRecentDocuments(limit = 50): Promise<DocRow[]> {
-  return q<DocRow>(
-    `SELECT id, sid, type::text AS type, name, mtime, ctime, nref, _ref, nlink, _link
+export async function listRecentDocuments(limit = 50): Promise<DocRaw[]> {
+  return q<DocRaw>(
+    `SELECT id, sid, type::text AS type, name, acl_id, mtime, ctime
        FROM documents
       ORDER BY mtime DESC
       LIMIT $1`,
@@ -106,9 +67,9 @@ export async function listRecentDocuments(limit = 50): Promise<DocRow[]> {
   );
 }
 
-export async function getDocumentBySid(sid: string): Promise<DocRow | null> {
-  return one<DocRow>(
-    `SELECT id, sid, type::text AS type, name, mtime, ctime, nref, _ref, nlink, _link
+export async function getDocumentBySid(sid: string): Promise<DocRaw | null> {
+  return one<DocRaw>(
+    `SELECT id, sid, type::text AS type, name, acl_id, mtime, ctime
        FROM documents
       WHERE sid = $1`,
     [sid]
@@ -170,7 +131,7 @@ export async function listArticlesInNamespace(namespaceSid: string) {
     WITH ns AS (
       SELECT id FROM documents WHERE sid = $1 AND type = 'namespace'
     )
-    -- 권장 방향: namespace → article
+    -- namespace → article
     SELECT a.sid AS article_sid
       FROM doc_refs r
       JOIN ns ON ns.id = r.src_id
@@ -190,8 +151,9 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
   const doc = await getDocumentBySid(sid);
   if (!doc) return null;
 
-  const refs = doc._ref ? doc._ref.split(";") : [];
-  const links = doc._link ? doc._link.split(";") : [];
+  // 새 schema: refs, links 는 doc_refs에서 직접 조회
+  const refs = (await getRefsOf(doc.id)).map((r) => r.ref_sid);
+  const links = (await getLinksOf(doc.id)).map((r) => r.src_sid);
 
   switch (doc.type) {
     case "article": {
@@ -220,7 +182,6 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     }
 
     case "user": {
-      // user(article)
       const art = await one<ArticleRow>(
         `SELECT content_md, table_of_content FROM articles WHERE id=$1`,
         [doc.id]
@@ -245,47 +206,21 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         `SELECT content_md, table_of_content FROM articles WHERE id=$1`,
         [doc.id]
       );
-      const g = await one<{ nuser: number; _user: string }>(
-        `SELECT nuser, _user FROM groups_doc WHERE id=$1`,
-        [doc.id]
-      );
+      // NOTE: Collect `user_idx` list from `group_members` table. -- KMSStudio
+      const members = (
+        await q<{ user_idx: number }>(
+          `SELECT user_idx FROM group_members WHERE group_id=$1 ORDER BY user_idx`,
+          [doc.id]
+        )
+      ).map((r) => r.user_idx);
       return {
         ...doc,
         type: "group",
         content_md: art?.content_md ?? "",
         table_of_content: art?.table_of_content ?? "",
-        nuser: g?.nuser ?? 0,
-        _user: g?._user ?? "",
+        members,
         refs,
         links,
-      };
-    }
-
-    case "image": {
-      const img = await one<{ _img: string }>(
-        `SELECT _img FROM images WHERE id=$1`,
-        [doc.id]
-      );
-      return {
-        ...doc,
-        type: "image",
-        _img: img?._img ?? "",
-        refs,
-        links,
-      };
-    }
-
-    case "file": {
-      const f = await one<{ _file: string }>(
-        `SELECT _file FROM files WHERE id=$1`,
-        [doc.id]
-      );
-      return {
-        ...doc,
-        type: "file",
-        _file: f?._file ?? "",
-        refs,
-        links: links,
       };
     }
 
@@ -308,7 +243,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         type: "acl",
         entries,
         refs,
-        links: links,
+        links,
       };
     }
   }
@@ -321,56 +256,26 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
 type SetBase = {
   type: DocType;
   name: string;
-  acl_id?: number | null;
+  acl_id: number | null;
   refs?: string[];
 };
 
-export type SetArticle = SetBase & {
-  type: "article";
+type SetArticleLike = SetBase & {
   content_md?: string;
   table_of_content?: string;
 };
 
-export type SetNamespace = SetBase & {
-  type: "namespace";
-};
-
-export type SetdUser = SetBase & {
-  type: "user";
-  user_idx: number;
-  content_md?: string;
-  table_of_content?: string;
-};
-
-export type SetdGroup = SetBase & {
-  type: "group";
-  content_md?: string;
-  table_of_content?: string;
-  members?: number[]; // replaces group_members if provided
-};
-
-export type SetdImage = SetBase & {
-  type: "image";
-  _img: string;
-};
-
-export type SetdFile = SetBase & {
-  type: "file";
-  _file: string;
-};
-
-export type SetdAcl = SetBase & {
-  type: "acl";
-  entries?: AclEntry[]; // replaces acl_entries if provided
-};
+export type SetNamespace = SetBase & { type: "namespace" };
+export type SetArticle = SetArticleLike & { type: "article" };
+export type SetdUser   = SetArticleLike & { type: "user"; user_idx: number };
+export type SetdGroup  = SetArticleLike & { type: "group"; members?: number[] };
+export type SetdAcl = SetBase & { type: "acl"; entries?: AclEntry[]; };
 
 export type SetDocument =
   | SetArticle
   | SetNamespace
   | SetdUser
   | SetdGroup
-  | SetdImage
-  | SetdFile
   | SetdAcl;
 
 function assertValidName(name: string) {
@@ -378,21 +283,33 @@ function assertValidName(name: string) {
   if (name.includes(":") || name.includes(";")) throw new Error("invalid_name_char");
 }
 
-// ─────────────────────────────────────────────────────────
-// setDocument: upsert
-//  - documents upsert for every DocType
-//  - doc_refs reconstruct
-//  - (acl) entries are deleted and reset
-//  - (group) members are deleted and reset
-// ─────────────────────────────────────────────────────────
+/**
+ * Parse SID string into type and name parts.
+ *
+ * @param {string} sid - Full sid string in "type:name" format
+ * @returns {{type: DocType, name: string} | null} Parsed type and name or null if invalid
+ */
+export function parseSid(sid: string): { type: DocType; name: string } | null {
+  if (!sid || !sid.includes(":")) return null
+  const [type, ...rest] = sid.split(":")
+  const name = rest.join(":").trim()
+  if (!name) return null
+  return { type: type as DocType, name }
+}
 
+/**
+ * Upsert a document of any DocType, update its sub-table, reset relations,
+ * and reconstruct references automatically from Markdown content.
+ * If `refs` is `undefined`, it handles like empty array `[]`.
+ *
+ * @param {SetDocument} input - Input payload describing the document and its data
+ * @returns {Promise<number>} The numeric id of the document
+ */
 export async function setDocument(input: SetDocument): Promise<number> {
-  const { type, name } = input;
+  const { type, name } = input
   assertValidName(name);
 
-  const acl_id = input.acl_id ?? null;
-  const refs = input.refs ?? [];
-
+  const acl_id = input.acl_id
   const docRow = await one<{ id: number }>(
     `
     INSERT INTO documents (type, name, acl_id)
@@ -404,13 +321,13 @@ export async function setDocument(input: SetDocument): Promise<number> {
     RETURNING id
     `,
     [type, name, acl_id]
-  );
-  if (!docRow?.id) throw new Error("upsert_documents_failed");
-  const id = docRow.id;
+  )
+  if (!docRow?.id) throw new Error("upsert_documents_failed")
+  const id = docRow.id
 
   switch (type) {
     case "article": {
-      const a = input as SetArticle;
+      const a = input as SetArticle
       await q(
         `
         INSERT INTO articles (id, content_md, table_of_content)
@@ -420,8 +337,8 @@ export async function setDocument(input: SetDocument): Promise<number> {
               table_of_content = EXCLUDED.table_of_content
         `,
         [id, a.content_md ?? "", a.table_of_content ?? ""]
-      );
-      break;
+      )
+      break
     }
     case "namespace": {
       await q(
@@ -431,11 +348,11 @@ export async function setDocument(input: SetDocument): Promise<number> {
         ON CONFLICT (id) DO NOTHING
         `,
         [id]
-      );
-      break;
+      )
+      break
     }
     case "user": {
-      const u = input as SetdUser;
+      const u = input as SetdUser
       await q(
         `
         INSERT INTO articles (id, content_md, table_of_content)
@@ -445,7 +362,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
               table_of_content = EXCLUDED.table_of_content
         `,
         [id, u.content_md ?? "", u.table_of_content ?? ""]
-      );
+      )
       await q(
         `
         INSERT INTO users_doc (id, user_idx)
@@ -454,11 +371,11 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET user_idx = EXCLUDED.user_idx
         `,
         [id, u.user_idx]
-      );
-      break;
+      )
+      break
     }
     case "group": {
-      const g = input as SetdGroup;
+      const g = input as SetdGroup
       await q(
         `
         INSERT INTO articles (id, content_md, table_of_content)
@@ -468,7 +385,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
               table_of_content = EXCLUDED.table_of_content
         `,
         [id, g.content_md ?? "", g.table_of_content ?? ""]
-      );
+      )
       await q(
         `
         INSERT INTO groups_doc (id)
@@ -476,50 +393,25 @@ export async function setDocument(input: SetDocument): Promise<number> {
         ON CONFLICT (id) DO NOTHING
         `,
         [id]
-      );
-      
-      await q(`DELETE FROM group_members WHERE group_id = $1`, [id]);
+      )
+      await q(`DELETE FROM group_members WHERE group_id = $1`, [id])
       if (g.members?.length) {
-        const uniq = Array.from(new Set(g.members.filter((v) => Number.isInteger(v)).map(Number)));
-        await q(
-          `
-          INSERT INTO group_members (group_id, user_idx)
-          SELECT $1, x FROM UNNEST($2::int[]) AS x
-          ON CONFLICT DO NOTHING
-          `,
-          [id, uniq]
-        );
+        const uniq = Array.from(new Set(g.members.filter((v) => Number.isInteger(v)).map(Number)))
+        if (uniq.length) {
+          await q(
+            `
+            INSERT INTO group_members (group_id, user_idx)
+            SELECT $1, x FROM UNNEST($2::int[]) AS x
+            ON CONFLICT DO NOTHING
+            `,
+            [id, uniq]
+          )
+        }
       }
-      break;
-    }
-    case "image": {
-      const im = input as SetdImage;
-      await q(
-        `
-        INSERT INTO images (id, _img)
-        VALUES ($1, $2)
-        ON CONFLICT (id) DO UPDATE
-          SET _img = EXCLUDED._img
-        `,
-        [id, im._img]
-      );
-      break;
-    }
-    case "file": {
-      const f = input as SetdFile;
-      await q(
-        `
-        INSERT INTO files (id, _file)
-        VALUES ($1, $2)
-        ON CONFLICT (id) DO UPDATE
-          SET _file = EXCLUDED._file
-        `,
-        [id, f._file]
-      );
-      break;
+      break
     }
     case "acl": {
-      const a = input as SetdAcl;
+      const a = input as SetdAcl
       await q(
         `
         INSERT INTO acls (id)
@@ -527,63 +419,60 @@ export async function setDocument(input: SetDocument): Promise<number> {
         ON CONFLICT (id) DO NOTHING
         `,
         [id]
-      );
-      await q(`DELETE FROM acl_entries WHERE acl_id = $1`, [id]);
+      )
+      await q(`DELETE FROM acl_entries WHERE acl_id = $1`, [id])
       if (a.entries?.length) {
-        for (const e of a.entries) {
-          await q(
-            `
-            INSERT INTO acl_entries (acl_id, target_t, target_id, rud_mask, allow)
-            VALUES ($1, $2::acl_target, $3, $4, $5)
-            `,
-            [id, e.target_t, e.target_id, e.rud_mask, e.allow]
-          );
-        }
+        const values = a.entries.map((e) => `(${id}, '${e.target_t}', ${e.target_id}, ${e.rud_mask}, ${e.allow})`)
+        await q(
+          `
+          INSERT INTO acl_entries (acl_id, target_t, target_id, rud_mask, allow)
+          VALUES ${values.join(",")}
+          `,
+        )
       }
-      break;
+      break
     }
   }
 
+  const refs = input.refs ?? [];
   await q(`DELETE FROM doc_refs WHERE src_id = $1`, [id]);
   if (refs.length) {
+    const rows = await q<{ sid: string; id: number }>(
+      `SELECT sid, id FROM documents WHERE sid = ANY($1::text[])`,
+      [refs]
+    );
+    const sidToId = new Map(rows.map((r) => [r.sid, r.id]));
+
+    const resolved: any[] = [];
+    const pending: any[] = [];
     for (const refSid of refs) {
-      const dst = await one<{ id: number }>(
-        `SELECT id FROM documents WHERE sid = $1`,
-        [refSid]
+      const dstId = sidToId.get(refSid);
+      if (dstId) { resolved.push([id, dstId]); }
+      else { pending.push([id, refSid]); }
+    }
+    if (resolved.length) {
+      await q(
+        `
+        INSERT INTO doc_refs (src_id, dst_id, dst_sid)
+        SELECT x.src_id, x.dst_id, NULL
+        FROM UNNEST($1::bigint[], $2::bigint[]) AS x(src_id, dst_id)
+        ON CONFLICT DO NOTHING
+        `,
+        [resolved.map((r) => r[0]), resolved.map((r) => r[1])]
       );
-      if (dst?.id) {
-        await q(
-          `
-          INSERT INTO doc_refs (src_id, dst_id, dst_sid)
-          VALUES ($1, $2, NULL)
-          ON CONFLICT DO NOTHING
-          `,
-          [id, dst.id]
-        );
-      } else {
-        await q(
-          `
-          INSERT INTO doc_refs (src_id, dst_id, dst_sid)
-          VALUES ($1, NULL, $2)
-          ON CONFLICT DO NOTHING
-          `,
-          [id, refSid]
-        );
-      }
+    }
+    if (pending.length) {
+      await q(
+        `
+        INSERT INTO doc_refs (src_id, dst_id, dst_sid)
+        SELECT x.src_id, NULL, x.dst_sid
+        FROM UNNEST($1::bigint[], $2::text[]) AS x(src_id, dst_sid)
+        ON CONFLICT DO NOTHING
+        `,
+        [pending.map((r) => r[0]), pending.map((r) => r[1])]
+      );
     }
   }
 
-  return id;
-}
-
-/* ─────────────────────────────────────────────────────────
- * Utility Functions
- * ───────────────────────────────────────────────────────── */
-
-export function parseSid(sid: string): { type: DocType; name: string } | null {
-  if (!sid || !sid.includes(":")) return null;
-  const [type, ...rest] = sid.split(":");
-  const name = rest.join(":").trim();
-  if (!name) return null;
-  return { type: type as DocType, name };
+  return id
 }

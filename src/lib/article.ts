@@ -7,7 +7,7 @@ import { JSDOM } from "jsdom";
  * Extract unique document SIDs referenced in Markdown content.
  * Finds links whose href starts with "/w/" and normalizes them to "type:name".
  */
-export async function extractDocRefsFromContent(contentMd: string): Promise<string[]> {
+export async function extractRefsFromArticle(contentMd: string): Promise<string[]> {
   const html: string = await marked(contentMd);
   const dom = new JSDOM(html);
   const anchors = dom.window.document.querySelectorAll("a[href], link[href]");
@@ -42,11 +42,11 @@ export async function extractDocRefsFromContent(contentMd: string): Promise<stri
  * Convert markdown into HTML, extract h1–h4 headings,
  * and return a serialized Table of Contents as an HTML fragment.
  *
- * @param markdown - Raw markdown content
+ * @param contentMd - Raw markdown content
  * @returns HTML fragment containing the table of contents
  */
-export async function extractTableOfContents(markdown: string): Promise<string> {
-  const html = await marked(markdown);
+export async function extractTableOfContents(contentMd: string): Promise<string> {
+  const html = await marked(contentMd);
   const dom = new JSDOM(html);
   const headings = dom.window.document.querySelectorAll("h1, h2, h3, h4");
 
