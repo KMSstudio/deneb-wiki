@@ -1,14 +1,8 @@
 // @/app/api/e/[sid]/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import {
-  parseSid,
-  getDocumentBySid,
-  setDocument,
-  type DocType,
-  type SetDocument,
-  SetdGroup,
-} from "@/lib/docs";
+import { parseSid, getDocumentBySid, setDocument, type DocType } from "@/lib/docs";
+import type { SetDocument, SetArticle, SetNamespace, SetdUser, SetdGroup } from "@/lib/docs";
 import type { EditResponse } from "@/types/api";
 import { extractRefsFromArticle } from "@/lib/article";
 
@@ -88,7 +82,7 @@ export async function POST(
           acl_id: acl_id_req,
           content_md,
           table_of_content,
-        } as SetDocument;
+        } as SetArticle;
         break;
       }
 
@@ -101,7 +95,7 @@ export async function POST(
           name,
           refs,
           acl_id: acl_id_req,
-        } as SetDocument;
+        } as SetNamespace;
         break;
       }
 
@@ -131,7 +125,7 @@ export async function POST(
           content_md,
           table_of_content,
           user_idx: user_idx_req,
-        } as SetDocument;
+        } as SetdUser;
         break;
       }
 

@@ -9,8 +9,8 @@ export default async function Page({
   params,
   searchParams,
 }: {
-  params: { sid: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ sid: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const raw: string = decodeURIComponent((await params).sid);
   const sid: string = raw.includes(":") ? raw : `article:${raw}`;
@@ -19,7 +19,7 @@ export default async function Page({
     const doc: Document | null = await getDocument(sid);
     const payload = doc ? { ok: true, sid, document: doc } : { ok: false, error: "not_found", sid };
 
-    if ((await searchParams).view === "raw") {
+    if ((await searchParams)?.view === "raw") {
       return <pre style={{ padding: 24 }}>{JSON.stringify(payload, null, 2)}</pre>;
     } else if (sid.startsWith("article:")) {
       return <ArticleView article={doc as Article | null} sid={sid} />;

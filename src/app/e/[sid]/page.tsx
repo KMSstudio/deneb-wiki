@@ -5,7 +5,7 @@ import ArticleEdit from "./ArticleEdit";
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
-export default async function Page({ params }: { params: { sid: string } }) {
+export default async function Page({ params }: { params: Promise<{ sid: string }> }) {
   const raw: string = decodeURIComponent((await params).sid);
   const sid: string = raw.includes(":") ? raw : `article:${raw}`;
 
