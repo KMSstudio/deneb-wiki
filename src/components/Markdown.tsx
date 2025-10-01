@@ -8,8 +8,8 @@ import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 
-import 'katex/dist/katex.min.css';
-import 'github-markdown-css/github-markdown.css';
+import "katex/dist/katex.min.css";
+import "github-markdown-css/github-markdown.css";
 
 type MarkdownProps = {
   content: string;

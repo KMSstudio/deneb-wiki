@@ -1,15 +1,15 @@
-
 # API Edit Examples (`/api/e/[sid]`)
 
 > 최초작성일 2025.09.29  
 > 최신개정일 2025.09.29  
 > 작성자 강명석  
-> 최신개정자 강명석  
+> 최신개정자 강명석
 
 이 문서는 `POST /api/e/[sid]` 라우트에 전달할 **요청 본문(body)** 예시를 DocType 별로 정리합니다.  
 본문은 **JSON** 이며, `sid`는 `type:name` 형식입니다. 예: `article:intro`, `group:scsc-core`, `acl:default`.
 
 > 공통 규칙
+>
 > - `acl_id`는 `number|null` 입니다. 생략 시 `null` 취급됩니다.
 > - 문서가 **이미 존재**하고 해당 문서에 `acl_id`가 설정되어 있으면, 업데이트 전 **U 비트(0b010)** 권한 검사를 수행합니다.
 > - `doc_refs`(문서 간 링크)는 `content_md` 에 포함된 `/w/...` 링크에서 자동 추출됩니다. 예: `/w/article:intro`, `/w/user:john`
@@ -22,6 +22,7 @@
   - `table_of_content?: string|null` (생략 가능)
 
 ### 최소 예시
+
 ```json
 {
   "content_md": "# 소개\nSCSC 아카이브에 오신 것을 환영합니다."
@@ -29,6 +30,7 @@
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": 10,
@@ -45,11 +47,13 @@
 - **Body 필드:** (없음, 옵션으로 `acl_id`만 허용)
 
 ### 최소 예시
+
 ```json
 {}
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": 3
@@ -65,6 +69,7 @@
   - `table_of_content?: string|null`
 
 ### 최소 예시
+
 ```json
 {
   "user_idx_req": 1024
@@ -72,6 +77,7 @@
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": 5,
@@ -92,6 +98,7 @@
   - `table_of_content?: string|null`
 
 ### 최소 예시
+
 ```json
 {
   "members": [1, 2, 3]
@@ -99,6 +106,7 @@
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": 8,
@@ -117,6 +125,7 @@
   - `_img: string | Buffer-like` (**필수**) — 바이너리/베이스64 등 저장 전략은 서버 구현에 따름
 
 ### 최소 예시
+
 ```json
 {
   "_img": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
@@ -124,6 +133,7 @@
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": 2,
@@ -138,6 +148,7 @@
   - `_file: string | Buffer-like` (**필수**)
 
 ### 최소 예시
+
 ```json
 {
   "_file": "UEsDBBQAAAAIA... (zip/pdf bytes encoded)"
@@ -145,6 +156,7 @@
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": 6,
@@ -159,15 +171,15 @@
   - `entries?: Array<{ target_t: string, target_id: number, rud_mask: number, allow: boolean }>`
 
 ### 최소 예시
+
 ```json
 {
-  "entries": [
-    { "target_t": "user", "target_id": 1, "rud_mask": 7, "allow": true }
-  ]
+  "entries": [{ "target_t": "user", "target_id": 1, "rud_mask": 7, "allow": true }]
 }
 ```
 
 ### 전체 예시
+
 ```json
 {
   "acl_id": null,
@@ -186,6 +198,7 @@
 ## cURL 예시 모음
 
 ### Article 생성/업데이트
+
 ```bash
 curl -X POST "https://example.com/api/e/article:intro" \
   -H "Content-Type: application/json" \
@@ -197,6 +210,7 @@ curl -X POST "https://example.com/api/e/article:intro" \
 ```
 
 ### User 생성/업데이트
+
 ```bash
 curl -X POST "https://example.com/api/e/user:john" \
   -H "Content-Type: application/json" \
@@ -208,6 +222,7 @@ curl -X POST "https://example.com/api/e/user:john" \
 ```
 
 ### Group 생성/업데이트
+
 ```bash
 curl -X POST "https://example.com/api/e/group:scsc-core" \
   -H "Content-Type: application/json" \
@@ -219,6 +234,7 @@ curl -X POST "https://example.com/api/e/group:scsc-core" \
 ```
 
 ### ACL 생성/업데이트
+
 ```bash
 curl -X POST "https://example.com/api/e/acl:default" \
   -H "Content-Type: application/json" \

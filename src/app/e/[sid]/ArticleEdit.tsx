@@ -6,13 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Article } from "@/lib/docs";
 import "@/styles/document/article.css";
 
-export default function ArticleEdit({
-  sid,
-  article,
-}: {
-  sid: string;
-  article: Article | null;
-}) {
+export default function ArticleEdit({ sid, article }: { sid: string; article: Article | null }) {
   const [content, setContent] = useState(article?.content_md || "");
   const [toc, setToc] = useState(article?.table_of_content || "");
   const [status, setStatus] = useState<null | string>(null);

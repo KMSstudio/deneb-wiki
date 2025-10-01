@@ -1,19 +1,17 @@
 // @/lib/db.ts
 
-import { Pool, type QueryResultRow } from 'pg';
+import { Pool, type QueryResultRow } from "pg";
 
 // 개발환경 HMR 대비 싱글톤
 const globalForPool = globalThis as unknown as { _pgPool?: Pool };
 
-console.log(`connectionString: ${process.env.DATABASE_URL}`)
+console.log(`connectionString: ${process.env.DATABASE_URL}`);
 
 export const pool =
   globalForPool._pgPool ??
   new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL?.includes('localhost')
-      ? false
-      : { rejectUnauthorized: false },
+    ssl: process.env.DATABASE_URL?.includes("localhost") ? false : { rejectUnauthorized: false },
   });
 
 if (!globalForPool._pgPool) globalForPool._pgPool = pool;

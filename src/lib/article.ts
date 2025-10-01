@@ -14,13 +14,19 @@ export async function extractRefsFromArticle(contentMd: string): Promise<string[
 
   const toSid = (href: string): string | null => {
     let url: URL;
-    try { url = new URL(href, "http://localhost"); } catch { return null; }
+    try {
+      url = new URL(href, "http://localhost");
+    } catch {
+      return null;
+    }
     if (!url.pathname.startsWith("/w/")) return null;
 
     let raw = url.pathname.slice(3);
     if (raw.endsWith("/")) raw = raw.slice(0, -1);
 
-    try { raw = decodeURIComponent(raw); } catch {}
+    try {
+      raw = decodeURIComponent(raw);
+    } catch {}
     raw = raw.replace(/\+/g, " ").normalize("NFC").trim();
     if (!raw) return null;
 

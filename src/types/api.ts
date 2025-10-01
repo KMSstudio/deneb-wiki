@@ -1,4 +1,3 @@
-
 export interface ApiResponseBase {
   ok: boolean;
   sid: string;
@@ -14,6 +13,4 @@ export interface ApiErrorResponse extends ApiResponseBase {
   message?: string;
 }
 
-export type EditResponse =
-  | ApiSuccessResponse
-  | ApiErrorResponse;
+export type EditResponse = ApiSuccessResponse | ApiErrorResponse;

@@ -17,9 +17,7 @@ export default async function Page({
 
   try {
     const doc: Document | null = await getDocument(sid);
-    const payload = doc
-      ? { ok: true, sid, document: doc }
-      : { ok: false, error: "not_found", sid };
+    const payload = doc ? { ok: true, sid, document: doc } : { ok: false, error: "not_found", sid };
 
     if ((await searchParams).view === "raw") {
       return <pre style={{ padding: 24 }}>{JSON.stringify(payload, null, 2)}</pre>;

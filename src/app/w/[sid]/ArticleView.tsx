@@ -32,7 +32,9 @@ export default async function ArticleView({
         <div className="article-notfound">
           <p>문서가 없습니다.</p>
           <p>
-            <Link href={`/e/${encodeURIComponent(sid.replace(/^article:/, ""))}`}>새 문서 만들기 →</Link>
+            <Link href={`/e/${encodeURIComponent(sid.replace(/^article:/, ""))}`}>
+              새 문서 만들기 →
+            </Link>
           </p>
         </div>
       </article>

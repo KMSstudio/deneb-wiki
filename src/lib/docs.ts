@@ -2,12 +2,7 @@
 
 import { q, one } from "./db";
 
-export type DocType =
-  | "article"
-  | "namespace"
-  | "user"
-  | "group"
-  | "acl";
+export type DocType = "article" | "namespace" | "user" | "group" | "acl";
 
 /** Basic Documents Row Query */
 export type DocRaw = {
@@ -40,8 +35,8 @@ type ArticleLike = Base & {
 
 export type Namespace = Base & { type: "namespace"; articles: string[] };
 export type Article = ArticleLike & { type: "article"; namespaces: string[] };
-export type dUser   = ArticleLike & { type: "user"; user_idx: number };
-export type dGroup  = ArticleLike & { type: "group"; members: number[] };
+export type dUser = ArticleLike & { type: "user"; user_idx: number };
+export type dGroup = ArticleLike & { type: "group"; members: number[] };
 
 export type AclEntry = {
   target_t: "user" | "group";
@@ -51,7 +46,7 @@ export type AclEntry = {
   allow: boolean;
 };
 
-export type dAcl = Base & { type: "acl"; entries: AclEntry[]; };
+export type dAcl = Base & { type: "acl"; entries: AclEntry[] };
 export type Document = Article | Namespace | dUser | dGroup | dAcl;
 
 /* ─────────────────────────────────────────────────────────
@@ -63,7 +58,7 @@ export async function listRecentDocuments(limit = 50): Promise<DocRaw[]> {
        FROM documents
       ORDER BY mtime DESC
       LIMIT $1`,
-    [limit]
+    [limit],
   );
 }
 
@@ -72,7 +67,7 @@ export async function getDocumentBySid(sid: string): Promise<DocRaw | null> {
     `SELECT id, sid, type::text AS type, name, acl_id, mtime, ctime
        FROM documents
       WHERE sid = $1`,
-    [sid]
+    [sid],
   );
 }
 
@@ -81,7 +76,7 @@ export async function getArticleById(id: number): Promise<ArticleRow | null> {
     `SELECT content_md, table_of_content
        FROM articles
       WHERE id = $1`,
-    [id]
+    [id],
   );
 }
 
@@ -92,7 +87,7 @@ export async function getRefsOf(docId: number): Promise<{ ref_sid: string }[]> {
   LEFT JOIN documents d2 ON d2.id = r.dst_id
       WHERE r.src_id = $1
    ORDER BY ref_sid`,
-    [docId]
+    [docId],
   );
 }
 
@@ -103,7 +98,7 @@ export async function getLinksOf(docId: number): Promise<{ src_sid: string }[]> 
        JOIN documents d1 ON d1.id = r.src_id
       WHERE r.dst_id = $1
    ORDER BY d1.sid`,
-    [docId]
+    [docId],
   );
 }
 
@@ -121,7 +116,7 @@ export async function getNamespacesOfArticle(articleId: number) {
      WHERE r.dst_id = $1
        AND ns.type = 'namespace'
     `,
-    [articleId]
+    [articleId],
   );
 }
 
@@ -138,7 +133,7 @@ export async function listArticlesInNamespace(namespaceSid: string) {
       JOIN documents a ON a.id = r.dst_id
      WHERE a.type = 'article'
     `,
-    [namespaceSid]
+    [namespaceSid],
   );
 }
 
@@ -184,12 +179,11 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     case "user": {
       const art = await one<ArticleRow>(
         `SELECT content_md, table_of_content FROM articles WHERE id=$1`,
-        [doc.id]
+        [doc.id],
       );
-      const u = await one<{ user_idx: number }>(
-        `SELECT user_idx FROM users_doc WHERE id=$1`,
-        [doc.id]
-      );
+      const u = await one<{ user_idx: number }>(`SELECT user_idx FROM users_doc WHERE id=$1`, [
+        doc.id,
+      ]);
       return {
         ...doc,
         type: "user",
@@ -204,13 +198,13 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     case "group": {
       const art = await one<ArticleRow>(
         `SELECT content_md, table_of_content FROM articles WHERE id=$1`,
-        [doc.id]
+        [doc.id],
       );
       // NOTE: Collect `user_idx` list from `group_members` table. -- KMSStudio
       const members = (
         await q<{ user_idx: number }>(
           `SELECT user_idx FROM group_members WHERE group_id=$1 ORDER BY user_idx`,
-          [doc.id]
+          [doc.id],
         )
       ).map((r) => r.user_idx);
       return {
@@ -236,7 +230,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
          LEFT JOIN documents d ON d.id = e.target_id
         WHERE e.acl_id = $1
         ORDER BY e.id`,
-        [doc.id]
+        [doc.id],
       );
       return {
         ...doc,
@@ -267,16 +261,11 @@ type SetArticleLike = SetBase & {
 
 export type SetNamespace = SetBase & { type: "namespace" };
 export type SetArticle = SetArticleLike & { type: "article" };
-export type SetdUser   = SetArticleLike & { type: "user"; user_idx: number };
-export type SetdGroup  = SetArticleLike & { type: "group"; members?: number[] };
-export type SetdAcl = SetBase & { type: "acl"; entries?: AclEntry[]; };
+export type SetdUser = SetArticleLike & { type: "user"; user_idx: number };
+export type SetdGroup = SetArticleLike & { type: "group"; members?: number[] };
+export type SetdAcl = SetBase & { type: "acl"; entries?: AclEntry[] };
 
-export type SetDocument =
-  | SetArticle
-  | SetNamespace
-  | SetdUser
-  | SetdGroup
-  | SetdAcl;
+export type SetDocument = SetArticle | SetNamespace | SetdUser | SetdGroup | SetdAcl;
 
 function assertValidName(name: string) {
   if (!name?.trim()) throw new Error("invalid_name");
@@ -290,11 +279,11 @@ function assertValidName(name: string) {
  * @returns {{type: DocType, name: string} | null} Parsed type and name or null if invalid
  */
 export function parseSid(sid: string): { type: DocType; name: string } | null {
-  if (!sid || !sid.includes(":")) return null
-  const [type, ...rest] = sid.split(":")
-  const name = rest.join(":").trim()
-  if (!name) return null
-  return { type: type as DocType, name }
+  if (!sid || !sid.includes(":")) return null;
+  const [type, ...rest] = sid.split(":");
+  const name = rest.join(":").trim();
+  if (!name) return null;
+  return { type: type as DocType, name };
 }
 
 /**
@@ -306,10 +295,10 @@ export function parseSid(sid: string): { type: DocType; name: string } | null {
  * @returns {Promise<number>} The numeric id of the document
  */
 export async function setDocument(input: SetDocument): Promise<number> {
-  const { type, name } = input
+  const { type, name } = input;
   assertValidName(name);
 
-  const acl_id = input.acl_id
+  const acl_id = input.acl_id;
   const docRow = await one<{ id: number }>(
     `
     INSERT INTO documents (type, name, acl_id)
@@ -320,14 +309,14 @@ export async function setDocument(input: SetDocument): Promise<number> {
           acl_id = EXCLUDED.acl_id
     RETURNING id
     `,
-    [type, name, acl_id]
-  )
-  if (!docRow?.id) throw new Error("upsert_documents_failed")
-  const id = docRow.id
+    [type, name, acl_id],
+  );
+  if (!docRow?.id) throw new Error("upsert_documents_failed");
+  const id = docRow.id;
 
   switch (type) {
     case "article": {
-      const a = input as SetArticle
+      const a = input as SetArticle;
       await q(
         `
         INSERT INTO articles (id, content_md, table_of_content)
@@ -336,9 +325,9 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET content_md = EXCLUDED.content_md,
               table_of_content = EXCLUDED.table_of_content
         `,
-        [id, a.content_md ?? "", a.table_of_content ?? ""]
-      )
-      break
+        [id, a.content_md ?? "", a.table_of_content ?? ""],
+      );
+      break;
     }
     case "namespace": {
       await q(
@@ -347,12 +336,12 @@ export async function setDocument(input: SetDocument): Promise<number> {
         VALUES ($1)
         ON CONFLICT (id) DO NOTHING
         `,
-        [id]
-      )
-      break
+        [id],
+      );
+      break;
     }
     case "user": {
-      const u = input as SetdUser
+      const u = input as SetdUser;
       await q(
         `
         INSERT INTO articles (id, content_md, table_of_content)
@@ -361,8 +350,8 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET content_md = EXCLUDED.content_md,
               table_of_content = EXCLUDED.table_of_content
         `,
-        [id, u.content_md ?? "", u.table_of_content ?? ""]
-      )
+        [id, u.content_md ?? "", u.table_of_content ?? ""],
+      );
       await q(
         `
         INSERT INTO users_doc (id, user_idx)
@@ -370,12 +359,12 @@ export async function setDocument(input: SetDocument): Promise<number> {
         ON CONFLICT (id) DO UPDATE
           SET user_idx = EXCLUDED.user_idx
         `,
-        [id, u.user_idx]
-      )
-      break
+        [id, u.user_idx],
+      );
+      break;
     }
     case "group": {
-      const g = input as SetdGroup
+      const g = input as SetdGroup;
       await q(
         `
         INSERT INTO articles (id, content_md, table_of_content)
@@ -384,19 +373,19 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET content_md = EXCLUDED.content_md,
               table_of_content = EXCLUDED.table_of_content
         `,
-        [id, g.content_md ?? "", g.table_of_content ?? ""]
-      )
+        [id, g.content_md ?? "", g.table_of_content ?? ""],
+      );
       await q(
         `
         INSERT INTO groups_doc (id)
         VALUES ($1)
         ON CONFLICT (id) DO NOTHING
         `,
-        [id]
-      )
-      await q(`DELETE FROM group_members WHERE group_id = $1`, [id])
+        [id],
+      );
+      await q(`DELETE FROM group_members WHERE group_id = $1`, [id]);
       if (g.members?.length) {
-        const uniq = Array.from(new Set(g.members.filter((v) => Number.isInteger(v)).map(Number)))
+        const uniq = Array.from(new Set(g.members.filter((v) => Number.isInteger(v)).map(Number)));
         if (uniq.length) {
           await q(
             `
@@ -404,33 +393,35 @@ export async function setDocument(input: SetDocument): Promise<number> {
             SELECT $1, x FROM UNNEST($2::int[]) AS x
             ON CONFLICT DO NOTHING
             `,
-            [id, uniq]
-          )
+            [id, uniq],
+          );
         }
       }
-      break
+      break;
     }
     case "acl": {
-      const a = input as SetdAcl
+      const a = input as SetdAcl;
       await q(
         `
         INSERT INTO acls (id)
         VALUES ($1)
         ON CONFLICT (id) DO NOTHING
         `,
-        [id]
-      )
-      await q(`DELETE FROM acl_entries WHERE acl_id = $1`, [id])
+        [id],
+      );
+      await q(`DELETE FROM acl_entries WHERE acl_id = $1`, [id]);
       if (a.entries?.length) {
-        const values = a.entries.map((e) => `(${id}, '${e.target_t}', ${e.target_id}, ${e.rud_mask}, ${e.allow})`)
+        const values = a.entries.map(
+          (e) => `(${id}, '${e.target_t}', ${e.target_id}, ${e.rud_mask}, ${e.allow})`,
+        );
         await q(
           `
           INSERT INTO acl_entries (acl_id, target_t, target_id, rud_mask, allow)
           VALUES ${values.join(",")}
           `,
-        )
+        );
       }
-      break
+      break;
     }
   }
 
@@ -439,7 +430,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
   if (refs.length) {
     const rows = await q<{ sid: string; id: number }>(
       `SELECT sid, id FROM documents WHERE sid = ANY($1::text[])`,
-      [refs]
+      [refs],
     );
     const sidToId = new Map(rows.map((r) => [r.sid, r.id]));
 
@@ -447,8 +438,11 @@ export async function setDocument(input: SetDocument): Promise<number> {
     const pending: any[] = [];
     for (const refSid of refs) {
       const dstId = sidToId.get(refSid);
-      if (dstId) { resolved.push([id, dstId]); }
-      else { pending.push([id, refSid]); }
+      if (dstId) {
+        resolved.push([id, dstId]);
+      } else {
+        pending.push([id, refSid]);
+      }
     }
     if (resolved.length) {
       await q(
@@ -458,7 +452,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
         FROM UNNEST($1::bigint[], $2::bigint[]) AS x(src_id, dst_id)
         ON CONFLICT DO NOTHING
         `,
-        [resolved.map((r) => r[0]), resolved.map((r) => r[1])]
+        [resolved.map((r) => r[0]), resolved.map((r) => r[1])],
       );
     }
     if (pending.length) {
@@ -469,10 +463,10 @@ export async function setDocument(input: SetDocument): Promise<number> {
         FROM UNNEST($1::bigint[], $2::text[]) AS x(src_id, dst_sid)
         ON CONFLICT DO NOTHING
         `,
-        [pending.map((r) => r[0]), pending.map((r) => r[1])]
+        [pending.map((r) => r[0]), pending.map((r) => r[1])],
       );
     }
   }
 
-  return id
+  return id;
 }
