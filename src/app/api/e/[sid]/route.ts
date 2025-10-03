@@ -1,26 +1,20 @@
 // @/app/api/e/[sid]/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { parseSid, getDocumentBySid, setDocument, type DocType } from "@/lib/docs";
-import type { SetDocument, SetArticle, SetNamespace, SetdUser, SetdGroup } from "@/lib/docs";
+import type {
+  DocType,
+  SetDocument,
+  SetArticle,
+  SetNamespace,
+  SetdUser,
+  SetdGroup,
+  SetdAcl,
+  SetAclEntry,
+} from "@/lib/docs";
+import { parseSid, getDocumentBySid, setDocument } from "@/lib/docs";
 import type { EditResponse } from "@/types/api";
 import { extractRefsFromArticle } from "@/lib/article";
-
-export type RUD = number;
-
-export async function getRudByAcl(_acl_id: number, _user_idx: number): Promise<RUD> {
-  return 7;
-}
-
-export function hasUpdate(mask: RUD): boolean {
-  return (mask & 0b010) !== 0;
-}
-export function hasRead(mask: RUD): boolean {
-  return (mask & 0b100) !== 0;
-}
-export function hasDelete(mask: RUD): boolean {
-  return (mask & 0b001) !== 0;
-}
+import { Rud, getRudByAcl, extractRefsFromAclEntries, extractSetAclEntries } from "@/lib/acl";
 
 function intOrNull(v: unknown): number | null {
   const n = Number(v);
@@ -51,10 +45,18 @@ export async function POST(
     const current = await getDocumentBySid(sid);
     if (current && current.sid === sid && current.acl_id !== null) {
       const acl_id = current.acl_id;
-      const rud = await getRudByAcl(acl_id, user_idx);
-      if (!hasUpdate(rud)) {
+      const rud: Rud = await getRudByAcl(acl_id, user_idx);
+
+      if (!rud.update) {
         return NextResponse.json(
-          { ok: false, error: "no_update_permission", sid, acl_id, rud },
+          {
+            ok: false,
+            error: "no_update_permission",
+            sid,
+            acl_id,
+            rud: rud.toNumber(),
+            rud_str: rud.toString(),
+          },
           { status: 403 },
         ) as NextResponse<EditResponse>;
       }
@@ -153,20 +155,16 @@ export async function POST(
       }
 
       case "acl": {
-        const entries = Array.isArray(body?.entries) ? body.entries : [];
-        // TODO: extract refs from acl
+        const entries: SetAclEntry[] = extractSetAclEntries(body?.entries);
+        const refs: string[] = extractRefsFromAclEntries(entries);
+
         payload = {
           type: "acl",
           name,
-          refs: [],
+          refs,
           acl_id: acl_id_req,
-          entries: entries.map((e: any) => ({
-            target_t: String(e?.target_t ?? ""),
-            target_id: Number(e?.target_id ?? 0),
-            rud_mask: Number(e?.rud_mask ?? 0),
-            allow: Boolean(e?.allow),
-          })),
-        } as unknown as SetDocument;
+          entries,
+        } as SetdAcl;
         break;
       }
 

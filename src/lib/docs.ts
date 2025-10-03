@@ -38,11 +38,12 @@ export type Article = ArticleLike & { type: "article"; namespaces: string[] };
 export type dUser = ArticleLike & { type: "user"; user_idx: number };
 export type dGroup = ArticleLike & { type: "group"; members: number[] };
 
+export type RUDMask = number;
 export type AclEntry = {
   target_t: "user" | "group";
   target_id: number;
-  target_sid: string;
-  rud_mask: number; // R=4, U=2, D=1
+  target_sid: string | null;
+  rud_mask: RUDMask; // R=4, U=2, D=1
   allow: boolean;
 };
 
@@ -259,11 +260,17 @@ type SetArticleLike = SetBase & {
   table_of_content?: string;
 };
 
+export type SetAclEntry = {
+  target_sid: string;
+  rud_mask: RUDMask; // R=4, U=2, D=1
+  allow: boolean;
+};
+
 export type SetNamespace = SetBase & { type: "namespace" };
 export type SetArticle = SetArticleLike & { type: "article" };
 export type SetdUser = SetArticleLike & { type: "user"; user_idx: number };
 export type SetdGroup = SetArticleLike & { type: "group"; members?: number[] };
-export type SetdAcl = SetBase & { type: "acl"; entries?: AclEntry[] };
+export type SetdAcl = SetBase & { type: "acl"; entries?: SetAclEntry[] };
 
 export type SetDocument = SetArticle | SetNamespace | SetdUser | SetdGroup | SetdAcl;
 
@@ -400,7 +407,6 @@ export async function setDocument(input: SetDocument): Promise<number> {
       break;
     }
     case "acl": {
-      const a = input as SetdAcl;
       await q(
         `
         INSERT INTO acls (id)
@@ -410,16 +416,32 @@ export async function setDocument(input: SetDocument): Promise<number> {
         [id],
       );
       await q(`DELETE FROM acl_entries WHERE acl_id = $1`, [id]);
-      if (a.entries?.length) {
-        const values = a.entries.map(
-          (e) => `(${id}, '${e.target_t}', ${e.target_id}, ${e.rud_mask}, ${e.allow})`,
+
+      if (input.entries?.length) {
+        // Resolve target_sid 2 (target_t, target_id)
+        const rows = await q<{ sid: string; id: number; type: "user" | "group" }>(
+          `SELECT sid, id, type::text AS type
+            FROM documents
+            WHERE sid = ANY($1::text[])
+              AND type IN ('user','group')`,
+          [input.entries.map((e) => e.target_sid)],
         );
-        await q(
-          `
-          INSERT INTO acl_entries (acl_id, target_t, target_id, rud_mask, allow)
-          VALUES ${values.join(",")}
-          `,
-        );
+        const sidMap = new Map(rows.map((r) => [r.sid, r]));
+        // Push values N query DB
+        const values: string[] = [];
+        for (const e of input.entries) {
+          const resolved = sidMap.get(e.target_sid);
+          if (!resolved) continue;
+          values.push(`(${id}, '${resolved.type}', ${resolved.id}, ${e.rud_mask}, ${e.allow})`);
+        }
+        if (values.length) {
+          await q(
+            `
+            INSERT INTO acl_entries (acl_id, target_t, target_id, rud_mask, allow)
+            VALUES ${values.join(",")}
+            `,
+          );
+        }
       }
       break;
     }

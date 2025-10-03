@@ -142,18 +142,6 @@ file은 media 이다
 upload에서 이미지 파일을 업로드 할 수 있다.
 이후 [file:hashvalue] 또는 `href=/media/hashvalue` 로 사용 가능하다.
 
-## 사용자
-
-id, user의 id
-type, 가입방식
-pw, 비밀번호의 hash 만약 가입방식이 자체로그인이 아니라면 빈 문자열
-snumail, @snu.ac.kr의 prefix
-name, 실제 이름. snumail 을 통해서 검증됨
-mojor, 실제 전공. snumail 을 통해서 검증됨
-snu*no_year, 학번의 년도
-snu_no_post, 학번의 postfix 5자리
-snu_no, f'{snu_no_year}*{snu_no_post}'
-
 ## 속성 config
 
 config 테이블에는 여러 종류가 있다. 먼저 아래가 있다.
@@ -162,4 +150,4 @@ document base acl은 다음과 같이 구성된다.
 type, document의 type
 acl, 문서에 적용되는 acl의 sid. 만약 빈 문자열 또는 null일 경우, 검사를 하지 않음
 
-만약 사용자가 U 권한을 가졌다면, 사용자는 새로운 type의 문서를 만들 권리를 가지고 있다.
+만약 사용자가 C 권한을 가졌다면, 사용자는 새로운 type의 문서를 만들 권리를 가지고 있다.

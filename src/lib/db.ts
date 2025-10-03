@@ -22,9 +22,9 @@ if (!globalForPool._pgPool) globalForPool._pgPool = pool;
  */
 export async function q<T extends QueryResultRow = QueryResultRow>(
   text: string,
-  params?: unknown[],
+  params?: any[],
 ): Promise<T[]> {
-  const res = await pool.query<T>(text, params as any[]);
+  const res = await pool.query<T>(text, params);
   return res.rows;
 }
 
