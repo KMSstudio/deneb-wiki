@@ -64,12 +64,18 @@ export async function listRecentDocuments(limit = 50): Promise<DocRaw[]> {
 }
 
 export async function getDocumentBySid(sid: string): Promise<DocRaw | null> {
-  return one<DocRaw>(
+  const row = await one<any>(
     `SELECT id, sid, type::text AS type, name, acl_id, mtime, ctime
        FROM documents
       WHERE sid = $1`,
     [sid],
   );
+  if (!row) return null;
+  return {
+    ...row,
+    id: Number(row.id),
+    acl_id: row.acl_id !== null ? Number(row.acl_id) : null,
+  } as DocRaw;
 }
 
 export async function getArticleById(id: number): Promise<ArticleRow | null> {
@@ -207,7 +213,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
           `SELECT user_idx FROM group_members WHERE group_id=$1 ORDER BY user_idx`,
           [doc.id],
         )
-      ).map((r) => r.user_idx);
+      ).map((r) => r.user_idx).map(Number);
       return {
         ...doc,
         type: "group",
@@ -220,7 +226,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     }
 
     case "acl": {
-      const entries = await q<AclEntry & { target_sid: string | null }>(
+      const raw_entries = await q<AclEntry & { target_sid: string | null }>(
         `SELECT
             target_t::text AS target_t,
             target_id,
@@ -233,6 +239,10 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         ORDER BY e.id`,
         [doc.id],
       );
+      const entries: AclEntry[] = raw_entries.map(e => ({
+        ...e,
+        target_id: Number(e.target_id),
+      }));
       return {
         ...doc,
         type: "acl",
@@ -390,15 +400,18 @@ export async function setDocument(input: SetDocument): Promise<number> {
         `,
         [id],
       );
+
       await q(`DELETE FROM group_members WHERE group_id = $1`, [id]);
-      if (g.members?.length) {
-        const uniq = Array.from(new Set(g.members.filter((v) => Number.isInteger(v)).map(Number)));
-        if (uniq.length) {
+      if (g.members && g.members.length > 0) {
+        const uniq = Array.from(new Set(
+          g.members.filter((v) => Number.isInteger(v)).map((v) => Number(v))
+        ));
+        if (uniq.length > 0) {
           await q(
             `
             INSERT INTO group_members (group_id, user_idx)
-            SELECT $1, x FROM UNNEST($2::int[]) AS x
-            ON CONFLICT DO NOTHING
+            SELECT $1, unnest($2::int[])
+            ON CONFLICT (group_id, user_idx) DO NOTHING
             `,
             [id, uniq],
           );

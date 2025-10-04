@@ -6,7 +6,7 @@ import { createUserLocal, issueJwt } from "@/lib/user";
 export async function POST(req: Request) {
   try {
     const { email, password, name, info } = await req.json();
-    if (!email || !password || !name || !info) {
+    if (!email || !password || !name) {
       return NextResponse.json({ ok: false, error: "missing_credentials" }, { status: 400 });
     }
 
