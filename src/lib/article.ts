@@ -51,7 +51,7 @@ export async function extractRefsFromArticle(contentMd: string): Promise<string[
  * @param contentMd - Raw markdown content
  * @returns HTML fragment containing the table of contents
  */
-export async function extractTableOfContents(contentMd: string): Promise<string> {
+export async function extractTocFromArticle(contentMd: string): Promise<string> {
   const html = await marked(contentMd);
   const dom = new JSDOM(html);
   const headings = dom.window.document.querySelectorAll("h1, h2, h3, h4");

@@ -11,7 +11,7 @@ import rehypeHighlight from "rehype-highlight";
 
 import "katex/dist/katex.min.css";
 import "github-markdown-css/github-markdown.css";
-import "highlight.js/styles/github-dark.css"; // 테마 (github, atom-one-dark, vs 등 가능)
+import "highlight.js/styles/github-dark.css";
 import styles from "./markdown.module.css";
 
 type MarkdownProps = {

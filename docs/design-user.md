@@ -6,9 +6,7 @@ name, 이름. snumail 을 통해서 검증됨. 아니면 null
 certified, 이름 검증 여부
 ctime,
 info, 유저정보, json string
-major, 실제 전공. snumail 을 통해서 검증됨. 아니면 null
-snu_no_year, 학번의 년도
-snu_no_post, 학번의 postfix 5자리
+{major, snu_year, snu_postfix}
 
 ### Credential
 
@@ -20,7 +18,8 @@ ctime, 등록일
 
 ### 회원가입
 
-사용자가 생성될 경우, 사용자는 group:user 에 등록됩니다.
+사용자가 생성될 경우, 사용자는 group:user 에 추가됩니다.
+만약 자신이 첫 사용자일 경우, 사용자는 group:admin, group:system 에 추가됩니다.
 만약 사용자가 OAuth 이메일 @domain.com 를 통해 로그인했다면, group:domain.com 에 해당 유저를 추가합니다.
 
 - 일반화원가입: 이메일과 비밀번호로 가입합니다. 이름을 입력하게 합니다.
