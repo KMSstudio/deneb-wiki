@@ -213,7 +213,9 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
           `SELECT user_idx FROM group_members WHERE group_id=$1 ORDER BY user_idx`,
           [doc.id],
         )
-      ).map((r) => r.user_idx).map(Number);
+      )
+        .map((r) => r.user_idx)
+        .map(Number);
       return {
         ...doc,
         type: "group",
@@ -239,7 +241,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         ORDER BY e.id`,
         [doc.id],
       );
-      const entries: AclEntry[] = raw_entries.map(e => ({
+      const entries: AclEntry[] = raw_entries.map((e) => ({
         ...e,
         target_id: Number(e.target_id),
       }));
@@ -403,9 +405,9 @@ export async function setDocument(input: SetDocument): Promise<number> {
 
       await q(`DELETE FROM group_members WHERE group_id = $1`, [id]);
       if (g.members && g.members.length > 0) {
-        const uniq = Array.from(new Set(
-          g.members.filter((v) => Number.isInteger(v)).map((v) => Number(v))
-        ));
+        const uniq = Array.from(
+          new Set(g.members.filter((v) => Number.isInteger(v)).map((v) => Number(v))),
+        );
         if (uniq.length > 0) {
           await q(
             `
