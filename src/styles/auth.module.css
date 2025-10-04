@@ -46,6 +46,10 @@
   background: #fff;
 }
 
+.inputError {
+  border: 1px solid red;
+}
+
 .button {
   padding: 10px;
   background-color: #f2f2f2;

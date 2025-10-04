@@ -11,16 +11,12 @@ PAGES
 /g/search?c=검색내용: 검색
 /g/article/short: 짧은 문서 보기
 /g/article/long: 긴 문서 보기
-/g/doctype: doctype의 문서 보기
+/g/list/doctype: doctype의 문서 보기
 
 /hist/[sid]
 /w/[sid]
 /e/[sid]
 /acl/[sid]
-
-/s/article/short
-/s/article/long
-/s/doctype
 
 API
 /api/e/문서이름

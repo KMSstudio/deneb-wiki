@@ -11,10 +11,16 @@ import styles from "@/styles/auth.module.css";
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [name, setName] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== passwordConfirm) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
 
     try {
       const res = await fetch("/api/auth/signup", {
@@ -72,6 +78,20 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={styles.input}
+          />
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="passwordConfirm" className={styles.label}>
+            Confirm Password
+          </label>
+          <input
+            id="passwordConfirm"
+            type="password"
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            className={`${styles.input} ${
+              passwordConfirm && (password !== passwordConfirm) ? styles.inputError : ""
+            }`}
           />
         </div>
         <div className={styles.field}>

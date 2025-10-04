@@ -59,6 +59,28 @@ async function ensureGroup(name: string): Promise<number> {
 }
 
 /**
+ * CHeck is given user exist on group.
+ * @param userIdx auth_users.idx
+ * @param groupSid ex) "group:admin"
+ */
+export async function isUserInGroup(userIdx: number, groupSid: string): Promise<boolean> {
+  const group = await one<{ id: number }>(
+    `SELECT d.id
+       FROM documents d
+       JOIN groups_doc g ON g.id = d.id
+      WHERE d.sid=$1 AND d.type='group'`,
+    [groupSid]
+  );
+  if (!group) return false;
+
+  const ref = await one<{ id: number }>(
+    `SELECT id FROM group_members WHERE group_id=$1 AND user_idx=$2`,
+    [group.id, userIdx]
+  );
+  return !!ref;
+}
+
+/**
  * Add user to a group. Safe with conflict.
  */
 async function addUserToGroup(userIdx: number, groupName: string) {
@@ -75,6 +97,28 @@ async function addUserToGroup(userIdx: number, groupName: string) {
     members: [...new Set([...((group as any).members ?? []), userIdx])].map(Number),
   };
   await setDocument(input);
+}
+
+/**
+ * Check if given user exists on documents table by ID
+ */
+export async function userExistsId(userId: number): Promise<boolean> {
+  const row = await one<{ id: number }>(
+    `SELECT id FROM documents WHERE type='user' AND id=$1`,
+    [userId]
+  );
+  return !!row;
+}
+
+/**
+ * Check if given user exists on user table by INDEX
+ */
+export async function userExistsIdx(userIdx: number): Promise<boolean> {
+  const row = await one<{ idx: number }>(
+    `SELECT idx FROM auth_users WHERE idx=$1`,
+    [userIdx]
+  );
+  return !!row;
 }
 
 /**
