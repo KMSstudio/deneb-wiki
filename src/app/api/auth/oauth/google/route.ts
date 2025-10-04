@@ -1,14 +1,14 @@
 // @/app/api/oauth/google/route.ts
 
-import { NextResponse } from "next/server"
-import { getUserByOAuth, issueJwt } from "@/lib/user"
+import { NextResponse } from "next/server";
+import { getUserByOAuth, issueJwt } from "@/lib/user";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const code = searchParams.get("code")
+  const { searchParams } = new URL(req.url);
+  const code = searchParams.get("code");
 
   if (!code) {
-    return NextResponse.json({ ok: false, error: "no_code" }, { status: 400 })
+    return NextResponse.json({ ok: false, error: "no_code" }, { status: 400 });
   }
 
   // 1. 토큰 교환
@@ -22,25 +22,28 @@ export async function GET(req: Request) {
       redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
       grant_type: "authorization_code",
     }),
-  }).then(r => r.json())
+  }).then((r) => r.json());
 
   if (!tokenRes.access_token) {
-    return NextResponse.json({ ok: false, error: "token_failed", detail: tokenRes }, { status: 400 })
+    return NextResponse.json(
+      { ok: false, error: "token_failed", detail: tokenRes },
+      { status: 400 },
+    );
   }
 
   // 2. 사용자 프로필 가져오기
   const profile = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
     headers: { Authorization: `Bearer ${tokenRes.access_token}` },
-  }).then(r => r.json())
+  }).then((r) => r.json());
 
   if (!profile.email) {
-    return NextResponse.json({ ok: false, error: "no_email" }, { status: 400 })
+    return NextResponse.json({ ok: false, error: "no_email" }, { status: 400 });
   }
 
-  const { email, name } = profile
+  const { email, name } = profile;
 
   // 3. DB에서 유저 조회
-  const user = await getUserByOAuth(email, "google")
+  const user = await getUserByOAuth(email, "google");
   if (!user) {
     // ❌ 유저 없음 → 프론트에서 가입 절차 필요
     return NextResponse.json({
@@ -49,12 +52,12 @@ export async function GET(req: Request) {
       email,
       name,
       provider: "google",
-    })
+    });
   }
 
   // ✅ 유저 존재 → 로그인 처리
-  const token = issueJwt(user)
-  const res = NextResponse.json({ ok: true, user })
-  res.cookies.set("session", token, { httpOnly: true })
-  return res
+  const token = issueJwt(user);
+  const res = NextResponse.json({ ok: true, user });
+  res.cookies.set("session", token, { httpOnly: true });
+  return res;
 }

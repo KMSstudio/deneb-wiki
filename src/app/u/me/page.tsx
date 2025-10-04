@@ -1,13 +1,13 @@
 // @/app/u/me/page.tsx
 
-import { cookies } from "next/headers"
-import Link from "next/link"
-import { verifyJwt } from "@/lib/user"
-import styles from "@/styles/auth.module.css"
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { verifyJwt } from "@/lib/user";
+import styles from "@/styles/auth.module.css";
 
 export default async function MePage() {
-  const token = (await cookies()).get("session")?.value
-  const payload = token ? verifyJwt(token) : null
+  const token = (await cookies()).get("session")?.value;
+  const payload = token ? verifyJwt(token) : null;
 
   if (!payload) {
     return (
@@ -20,7 +20,7 @@ export default async function MePage() {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -51,5 +51,5 @@ export default async function MePage() {
         </Link>
       </div>
     </div>
-  )
+  );
 }
