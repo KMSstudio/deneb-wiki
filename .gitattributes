@@ -1,0 +1,45 @@
+# CRLF/LF Convert
+* text=auto eol=lf
+
+# Text
+*.js     text
+*.ts     text
+*.tsx    text
+*.jsx    text
+*.json   text
+*.css    text
+*.scss   text
+*.md     text
+*.yml    text
+*.yaml   text
+*.env    text
+
+# Binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.webp   binary
+*.svg    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.eot    binary
+*.mp4    binary
+*.mp3    binary
+*.mov    binary
+*.pdf    binary
+
+# Exclude from GitHub language stat.
+.next/* linguist-vendored
+out/*   linguist-vendored
+dist/*  linguist-vendored
+build/* linguist-vendored
+
+# Configs
+Dockerfile text
+*.dockerignore text
+*.gitattributes text
+*.gitignore text
+*.editorconfig text
