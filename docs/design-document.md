@@ -56,7 +56,7 @@ article 은 document 를 상속한다.
 
 document 가 가진 모든 요소
 content, article의 글 내용. markdown + latex형식
-table_of_content, article의 목차. HTML로 작성 형식. 렌더링 시 content의 [spec:목차] 가 이 HTML로 대체됨
+toc, article의 목차. HTML로 작성 형식. 렌더링 시 content의 [spec:목차] 가 이 HTML로 대체됨
 
 아래같은 기능을 가진다.
 \_ref 중 namespace type 인 document 만 들러서, 이 문서의 분류 \_space 를 만들 수 있다. 마찬가지로 개념적인 ㄱ밧이고, 실제 DB에는 존재하지 않는다.

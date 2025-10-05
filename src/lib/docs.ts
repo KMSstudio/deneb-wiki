@@ -17,7 +17,7 @@ export type DocRaw = {
 
 export type ArticleRow = {
   content_md: string;
-  table_of_content: string;
+  toc: string;
 };
 
 /* ─────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ type Base = DocRaw & {
 
 type ArticleLike = Base & {
   content_md: string;
-  table_of_content: string;
+  toc: string;
 };
 
 export type Namespace = Base & { type: "namespace"; articles: string[] };
@@ -80,7 +80,7 @@ export async function getDocumentBySid(sid: string): Promise<DocRaw | null> {
 
 export async function getArticleById(id: number): Promise<ArticleRow | null> {
   return one<ArticleRow>(
-    `SELECT content_md, table_of_content
+    `SELECT content_md, toc
        FROM articles
       WHERE id = $1`,
     [id],
@@ -165,7 +165,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         ...doc,
         type: "article",
         content_md: art?.content_md ?? "",
-        table_of_content: art?.table_of_content ?? "",
+        toc: art?.toc ?? "",
         refs,
         links,
         namespaces,
@@ -185,7 +185,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
 
     case "user": {
       const art = await one<ArticleRow>(
-        `SELECT content_md, table_of_content FROM articles WHERE id=$1`,
+        `SELECT content_md, toc FROM articles WHERE id=$1`,
         [doc.id],
       );
       const u = await one<{ user_idx: number }>(`SELECT user_idx FROM users_doc WHERE id=$1`, [
@@ -195,7 +195,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         ...doc,
         type: "user",
         content_md: art?.content_md ?? "",
-        table_of_content: art?.table_of_content ?? "",
+        toc: art?.toc ?? "",
         user_idx: u?.user_idx ?? 0,
         refs,
         links,
@@ -204,7 +204,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
 
     case "group": {
       const art = await one<ArticleRow>(
-        `SELECT content_md, table_of_content FROM articles WHERE id=$1`,
+        `SELECT content_md, toc FROM articles WHERE id=$1`,
         [doc.id],
       );
       // NOTE: Collect `user_idx` list from `group_members` table. -- KMSStudio
@@ -220,7 +220,7 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
         ...doc,
         type: "group",
         content_md: art?.content_md ?? "",
-        table_of_content: art?.table_of_content ?? "",
+        toc: art?.toc ?? "",
         members,
         refs,
         links,
@@ -338,11 +338,11 @@ export async function setDocument(input: SetDocument): Promise<number> {
       const a = input as SetArticle;
       await q(
         `
-        INSERT INTO articles (id, content_md, table_of_content)
+        INSERT INTO articles (id, content_md, toc)
         VALUES ($1, $2, $3)
         ON CONFLICT (id) DO UPDATE
           SET content_md = EXCLUDED.content_md,
-              table_of_content = EXCLUDED.table_of_content
+              toc = EXCLUDED.toc
         `,
         [id, a.content_md ?? "", a.toc ?? ""],
       );
@@ -363,11 +363,11 @@ export async function setDocument(input: SetDocument): Promise<number> {
       const u = input as SetdUser;
       await q(
         `
-        INSERT INTO articles (id, content_md, table_of_content)
+        INSERT INTO articles (id, content_md, toc)
         VALUES ($1, $2, $3)
         ON CONFLICT (id) DO UPDATE
           SET content_md = EXCLUDED.content_md,
-              table_of_content = EXCLUDED.table_of_content
+              toc = EXCLUDED.toc
         `,
         [id, u.content_md ?? "", u.toc ?? ""],
       );
@@ -386,11 +386,11 @@ export async function setDocument(input: SetDocument): Promise<number> {
       const g = input as SetdGroup;
       await q(
         `
-        INSERT INTO articles (id, content_md, table_of_content)
+        INSERT INTO articles (id, content_md, toc)
         VALUES ($1, $2, $3)
         ON CONFLICT (id) DO UPDATE
           SET content_md = EXCLUDED.content_md,
-              table_of_content = EXCLUDED.table_of_content
+              toc = EXCLUDED.toc
         `,
         [id, g.content_md ?? "", g.toc ?? ""],
       );

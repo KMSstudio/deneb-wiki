@@ -19,7 +19,7 @@
 - **SID 예시:** `/api/e/article:intro`
 - **Body 필드:**
   - `content_md?: string` (기본값 `""`)
-  - `table_of_content?: string|null` (생략 가능)
+  - `toc?: string|null` (생략 가능)
 
 ### 최소 예시
 
@@ -35,7 +35,7 @@
 {
   "acl_id": 10,
   "content_md": "# 소개\n[프로젝트](/w/article:project) 페이지를 참고하세요.",
-  "table_of_content": "<ul><li>소개</li></ul>"
+  "toc": "<ul><li>소개</li></ul>"
 }
 ```
 
@@ -66,7 +66,7 @@
 - **Body 필드:**
   - `user_idx_req: number` (**필수**) — 이 User 문서가 연결될 실제 사용자 식별자
   - `content_md?: string`
-  - `table_of_content?: string|null`
+  - `toc?: string|null`
 
 ### 최소 예시
 
@@ -83,7 +83,7 @@
   "acl_id": 5,
   "user_idx_req": 1024,
   "content_md": "## 존의 페이지\n- 관심사: 분산시스템\n자세한 정보는 [/w/article:intro](/w/article:intro)",
-  "table_of_content": "<ul><li>프로필</li></ul>"
+  "toc": "<ul><li>프로필</li></ul>"
 }
 ```
 
@@ -95,7 +95,7 @@
 - **Body 필드:**
   - `members?: number[]` — 유저 인덱스 배열(중복 및 비정수는 제거됨)
   - `content_md?: string`
-  - `table_of_content?: string|null`
+  - `toc?: string|null`
 
 ### 최소 예시
 
@@ -112,7 +112,7 @@
   "acl_id": 8,
   "members": [1, 2, 2, 3, 5],
   "content_md": "# SCSC Core\n- 운영진 소개 ([링크](/w/user:admin))",
-  "table_of_content": "<ul><li>구성원</li></ul>"
+  "toc": "<ul><li>구성원</li></ul>"
 }
 ```
 
@@ -205,7 +205,7 @@ curl -X POST "https://example.com/api/e/article:intro" \
   -d '{
     "acl_id": 10,
     "content_md": "# 소개\n[프로젝트](/w/article:project)",
-    "table_of_content": "<ul><li>소개</li></ul>"
+    "toc": "<ul><li>소개</li></ul>"
   }'
 ```
 
@@ -217,7 +217,7 @@ curl -X POST "https://example.com/api/e/user:john" \
   -d '{
     "user_idx_req": 1024,
     "content_md": "## 존의 페이지",
-    "table_of_content": null
+    "toc": null
   }'
 ```
 
@@ -229,7 +229,7 @@ curl -X POST "https://example.com/api/e/group:scsc-core" \
   -d '{
     "members": [1,2,3,5],
     "content_md": "# Core",
-    "table_of_content": "<ul><li>구성원</li></ul>"
+    "toc": "<ul><li>구성원</li></ul>"
   }'
 ```
 

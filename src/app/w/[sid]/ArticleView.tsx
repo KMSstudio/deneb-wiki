@@ -1,8 +1,10 @@
 // @/app/w/[sid]/ArticleView.tsx
+
 import type { Article } from "@/lib/docs";
 import Link from "next/link";
 import Markdown from "@/components/Markdown";
 import "@/styles/document/article.css";
+import { makeArticleContent } from "@/lib/article";
 
 export function ArticleTitle({ sid }: { sid: string }) {
   const display = sid.replace(/^article:/, "");
@@ -44,15 +46,8 @@ export default async function ArticleView({
   return (
     <article className="article">
       <ArticleTitle sid={sid} />
-
-      {article.table_of_content && (
-        <section className="article-toc">
-          <div dangerouslySetInnerHTML={{ __html: article.table_of_content }} />
-        </section>
-      )}
-
       <section className="article-content">
-        <Markdown content={article.content_md} />
+        <Markdown content={makeArticleContent(article.content_md, article.toc)} />
       </section>
     </article>
   );

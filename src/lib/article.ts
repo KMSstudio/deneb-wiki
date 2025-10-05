@@ -66,3 +66,31 @@ export async function extractTocFromArticle(contentMd: string): Promise<string> 
   });
   return `<ul class="toc">${tocItems.join("")}</ul>`;
 }
+
+/**
+ * Replace placeholder patterns in article markdown content.
+ *
+ * This function performs two preprocessing steps on a given Markdown string:
+ *  1. Replaces `[toc]()` or `[목차]()` with the provided HTML Table of Contents.
+ *  2. Converts `[sid]()` or `[article:sid]()` into `[sid](/w/sid)` form,
+ *     ensuring that links point to the proper wiki path.
+ *
+ * @param {string} contentMd - Raw markdown content that may contain `[toc]()` or `[sid]()`.
+ * @param {string} tocHtml - HTML fragment to insert in place of `[toc]()` or `[목차]()`.
+ * @returns {string} Processed markdown string with placeholders replaced.
+ */
+export function makeArticleContent(contentMd: string, tocHtml: string): string {
+  let result = contentMd;
+
+  result = result.replace(/\[(?:toc|목차)\]\(\)/gi, tocHtml);
+
+  result = result.replace(
+    /\[([^\[\]\(\):]+|article:[^\[\]\(\):]+)\]\(\)/g,
+    (_match, sid) => {
+      const name = sid.startsWith("article:") ? sid.slice(8) : sid;
+      return `[${name}](/w/${sid})`;
+    }
+  );
+
+  return result;
+}
