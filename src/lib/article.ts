@@ -5,40 +5,39 @@ import { JSDOM } from "jsdom";
 
 /**
  * Extract unique document SIDs referenced in Markdown content.
- * Finds links whose href starts with "/w/" and normalizes them to "type:name".
+ * Handles both "/w/..." links and empty links "[sid]()".
+ * Ensures all results are normalized to "type:name" form.
  */
 export async function extractRefsFromArticle(contentMd: string): Promise<string[]> {
   const html: string = await marked(contentMd);
   const dom = new JSDOM(html);
   const anchors = dom.window.document.querySelectorAll("a[href], link[href]");
 
-  const toSid = (href: string): string | null => {
-    let url: URL;
-    try {
-      url = new URL(href, "http://localhost");
-    } catch {
-      return null;
-    }
-    if (!url.pathname.startsWith("/w/")) return null;
-
-    let raw = url.pathname.slice(3);
-    if (raw.endsWith("/")) raw = raw.slice(0, -1);
-
-    try {
-      raw = decodeURIComponent(raw);
-    } catch {}
-    raw = raw.replace(/\+/g, " ").normalize("NFC").trim();
-    if (!raw) return null;
-
-    return raw.includes(":") ? raw : `article:${raw}`;
-  };
-
   const refs: string[] = [];
+
   anchors.forEach((el) => {
-    const href = el.getAttribute("href");
-    if (!href) return;
-    const sid = toSid(href);
-    if (sid) refs.push(sid);
+    const href = el.getAttribute("href") || "";
+    const text = el.textContent?.trim() ?? "";
+
+    // case 1: href="/w/..."
+    if (href.startsWith("/w/")) {
+      let raw = href.slice(3);
+      if (raw.endsWith("/")) raw = raw.slice(0, -1);
+      try {
+        raw = decodeURIComponent(raw);
+      } catch {}
+      raw = raw.replace(/\+/g, " ").normalize("NFC").trim();
+      if (raw) refs.push(raw.includes(":") ? raw : `article:${raw}`);
+      return;
+    }
+
+    // case 2: empty link [something]()
+    if (href === "" && text) {
+      const raw = text.normalize("NFC").trim();
+      if (raw === "toc" || raw === "목차") return;
+      if (raw) refs.push(raw.includes(":") ? raw : `article:${raw}`);
+      return;
+    }
   });
 
   return Array.from(new Set(refs));
@@ -70,14 +69,15 @@ export async function extractTocFromArticle(contentMd: string): Promise<string> 
 /**
  * Replace placeholder patterns in article markdown content.
  *
- * This function performs two preprocessing steps on a given Markdown string:
- *  1. Replaces `[toc]()` or `[목차]()` with the provided HTML Table of Contents.
- *  2. Converts `[sid]()` or `[article:sid]()` into `[sid](/w/sid)` form,
- *     ensuring that links point to the proper wiki path.
+ * 1. Replaces `[toc]()` or `[목차]()` with provided HTML Table of Contents.
+ * 2. Converts `[something]()` into `[something](/w/something)` form.
+ *    - If "something" has no type prefix, assume "article:something".
+ *    - e.g. `[intro]()` → `[intro](/w/article:intro)`
+ *           `[user:admin]()` → `[admin](/w/user:admin)`
  *
- * @param {string} contentMd - Raw markdown content that may contain `[toc]()` or `[sid]()`.
- * @param {string} tocHtml - HTML fragment to insert in place of `[toc]()` or `[목차]()`.
- * @returns {string} Processed markdown string with placeholders replaced.
+ * @param {string} contentMd - Raw markdown content possibly containing placeholders.
+ * @param {string} tocHtml - HTML fragment to replace `[toc]()` or `[목차]()`.
+ * @returns {string} Processed markdown with placeholders replaced.
  */
 export function makeArticleContent(contentMd: string, tocHtml: string): string {
   let result = contentMd;
@@ -85,10 +85,10 @@ export function makeArticleContent(contentMd: string, tocHtml: string): string {
   result = result.replace(/\[(?:toc|목차)\]\(\)/gi, tocHtml);
 
   result = result.replace(
-    /\[([^\[\]\(\):]+|article:[^\[\]\(\):]+)\]\(\)/g,
-    (_match, sid) => {
-      const name = sid.startsWith("article:") ? sid.slice(8) : sid;
-      return `[${name}](/w/${sid})`;
+    /\[([^\[\]\(\)]+)\]\(\)/g,
+    (_match, raw) => {
+      const sid = raw.includes(":") ? raw : `article:${raw}`;
+      return `[${raw}](/w/${sid})`;
     }
   );
 
