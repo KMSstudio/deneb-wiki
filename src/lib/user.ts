@@ -50,7 +50,7 @@ async function ensureGroup(name: string): Promise<number> {
     name,
     acl_id: null,
     content_md: "",
-    table_of_content: "",
+    toc: "",
     members: [],
   };
 
@@ -93,7 +93,7 @@ async function addUserToGroup(userIdx: number, groupName: string) {
     name: groupName,
     acl_id: group.acl_id,
     content_md: "",
-    table_of_content: "",
+    toc: "",
     members: [...new Set([...((group as any).members ?? []), userIdx])].map(Number),
   };
   await setDocument(input);

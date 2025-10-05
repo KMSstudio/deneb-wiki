@@ -269,7 +269,7 @@ type SetBase = {
 
 type SetArticleLike = SetBase & {
   content_md?: string;
-  table_of_content?: string;
+  toc?: string;
 };
 
 export type SetAclEntry = {
@@ -344,7 +344,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET content_md = EXCLUDED.content_md,
               table_of_content = EXCLUDED.table_of_content
         `,
-        [id, a.content_md ?? "", a.table_of_content ?? ""],
+        [id, a.content_md ?? "", a.toc ?? ""],
       );
       break;
     }
@@ -369,7 +369,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET content_md = EXCLUDED.content_md,
               table_of_content = EXCLUDED.table_of_content
         `,
-        [id, u.content_md ?? "", u.table_of_content ?? ""],
+        [id, u.content_md ?? "", u.toc ?? ""],
       );
       await q(
         `
@@ -392,7 +392,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
           SET content_md = EXCLUDED.content_md,
               table_of_content = EXCLUDED.table_of_content
         `,
-        [id, g.content_md ?? "", g.table_of_content ?? ""],
+        [id, g.content_md ?? "", g.toc ?? ""],
       );
       await q(
         `

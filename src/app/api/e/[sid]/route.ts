@@ -13,7 +13,7 @@ import type {
 } from "@/lib/docs";
 import { parseSid, getDocumentBySid, setDocument } from "@/lib/docs";
 import type { EditResponse } from "@/types/api";
-import { extractRefsFromArticle } from "@/lib/article";
+import { extractRefsFromArticle, extractTocFromArticle } from "@/lib/article";
 import { Rud, getRudByAcl, extractRefsFromAclEntries, extractSetAclEntries } from "@/lib/acl";
 
 function intOrNull(v: unknown): number | null {
@@ -41,12 +41,10 @@ export async function POST(
     const body = (typeof raw === "object" && raw !== null ? raw : {}) as Record<string, unknown>;
     const user_idx: number = Number(body?.user_idx ?? 0) || 0;
 
-    // Check existing doc's ACL only when doc already exists and acl_id is set.
     const current = await getDocumentBySid(sid);
     if (current && current.sid === sid && current.acl_id !== null) {
       const acl_id = current.acl_id;
       const rud: Rud = await getRudByAcl(acl_id, user_idx);
-
       if (!rud.update) {
         return NextResponse.json(
           {
@@ -65,25 +63,27 @@ export async function POST(
     const acl_id_req = intOrNull(body?.acl_id);
     const type = parsed.type as DocType;
     const name = parsed.name as string;
-
     let payload: SetDocument;
 
     switch (type) {
       case "article": {
         const content_md: string | undefined =
           typeof body?.content_md === "string" ? body.content_md : undefined;
-        const table_of_content: string | undefined =
-          typeof body?.table_of_content === "string" ? body?.table_of_content : undefined;
-        const refs: string[] =
-          content_md !== undefined ? await extractRefsFromArticle(content_md) : [];
-
+        let toc: string | undefined = undefined;
+        let refs: string[] = [];
+        if (content_md !== undefined) {
+          [toc, refs] = await Promise.all([
+            extractTocFromArticle(content_md),
+            extractRefsFromArticle(content_md),
+          ]);
+        }
         payload = {
           type: "article",
           name,
           refs,
           acl_id: acl_id_req,
           content_md,
-          table_of_content,
+          toc,
         } as SetArticle;
         break;
       }
@@ -104,10 +104,14 @@ export async function POST(
       case "user": {
         const content_md: string | undefined =
           typeof body?.content_md === "string" ? body.content_md : undefined;
-        const table_of_content: string | undefined =
-          typeof body?.table_of_content === "string" ? body?.table_of_content : undefined;
-        const refs: string[] =
-          content_md !== undefined ? await extractRefsFromArticle(content_md) : [];
+        let toc: string | undefined = undefined;
+        let refs: string[] = [];
+        if (content_md !== undefined) {
+          [toc, refs] = await Promise.all([
+            extractTocFromArticle(content_md),
+            extractRefsFromArticle(content_md),
+          ]);
+        }
         const user_idx_req = intOrNull(body?.user_idx_req);
         if (user_idx_req === null) {
           return NextResponse.json(
@@ -125,7 +129,7 @@ export async function POST(
           refs,
           acl_id: acl_id_req,
           content_md,
-          table_of_content,
+          toc,
           user_idx: user_idx_req,
         } as SetdUser;
         break;
@@ -134,10 +138,14 @@ export async function POST(
       case "group": {
         const content_md: string | undefined =
           typeof body?.content_md === "string" ? body.content_md : undefined;
-        const table_of_content: string | undefined =
-          typeof body?.table_of_content === "string" ? body.table_of_content : undefined;
-        const refs: string[] =
-          content_md !== undefined ? await extractRefsFromArticle(content_md) : [];
+        let toc: string | undefined = undefined;
+        let refs: string[] = [];
+        if (content_md !== undefined) {
+          [toc, refs] = await Promise.all([
+            extractTocFromArticle(content_md),
+            extractRefsFromArticle(content_md),
+          ]);
+        }
         const members: number[] = Array.isArray(body?.members)
           ? body.members.map((m: any) => Number(m)).filter((n: any) => Number.isInteger(n))
           : [];
@@ -148,7 +156,7 @@ export async function POST(
           refs,
           acl_id: acl_id_req,
           content_md,
-          table_of_content,
+          toc,
           members,
         } as SetdGroup;
         break;

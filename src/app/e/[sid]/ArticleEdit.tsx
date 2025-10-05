@@ -8,7 +8,6 @@ import "@/styles/document/article.css";
 
 export default function ArticleEdit({ sid, article }: { sid: string; article: Article | null }) {
   const [content, setContent] = useState(article?.content_md || "");
-  const [toc, setToc] = useState(article?.table_of_content || "");
   const [status, setStatus] = useState<null | string>(null);
   const router = useRouter();
 
@@ -17,7 +16,7 @@ export default function ArticleEdit({ sid, article }: { sid: string; article: Ar
       const res = await fetch(`/api/e/${encodeURIComponent(sid)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content_md: content, table_of_content: toc }),
+        body: JSON.stringify({ content_md: content }),
       });
 
       if (res.ok) {
@@ -41,13 +40,6 @@ export default function ArticleEdit({ sid, article }: { sid: string; article: Ar
         placeholder="Content (Markdown)"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-      />
-
-      <textarea
-        className="article-edit_textarea article-edit_toc"
-        placeholder="Table of Contents (HTML)"
-        value={toc}
-        onChange={(e) => setToc(e.target.value)}
       />
 
       <button className="article-edit_save" onClick={handleSave}>
