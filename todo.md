@@ -8,6 +8,7 @@
 - 헤더 디자인
 - redirect 기능
 - namespaceView 제작
+- 토론 기능
 
 - Media 행동 정의
 - 간단한 image는 등록 가능하게 변경

@@ -12,6 +12,7 @@ PAGES
 /g/article/short: 짧은 문서 보기
 /g/article/long: 긴 문서 보기
 /g/list/doctype: doctype의 문서 보기
+/g/need/doctype: 필요한 doctype의 문서 보기
 
 /hist/[sid]
 /w/[sid]
