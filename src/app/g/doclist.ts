@@ -67,9 +67,77 @@ export interface NeededListResult {
 }
 
 /**
- * References whose targets do not exist yet:
- * pick r.dst_sid where r.dst_id IS NULL and no documents.sid matches it.
- * Filter by doctype prefix in "type:name".
+ * List "missing targets" that are referenced but not yet created as documents.
+ *
+ * This query groups `doc_refs` rows whose target is unresolved
+ * (`doc_refs.dst_id IS NULL`) and for which no matching `documents.sid`
+ * exists yet. It filters by a specific `doctype` using the `type:name`
+ * SID prefix (e.g., `article:foo`) and returns:
+ *
+ * - `sid`     : Full target SID (`type:name`)
+ * - `type`    : Extracted doctype from `sid` (before the first `:`)
+ * - `name`    : Extracted name from `sid` (after the first `:`)
+ * - `ref_cnt` : Number of references pointing to this missing target
+ * - `last_ref`: Most recent reference time among those rows
+ *
+ * SQL breakdown:
+ * - `SELECT r.dst_sid AS sid`                          → expose target SID
+ * - `split_part(r.dst_sid, ':', 1) AS type`            → parse SID prefix as doc type
+ * - `split_part(r.dst_sid, ':', 2) AS name`            → parse SID suffix as name
+ * - `COUNT(*) AS ref_cnt`                              → how many refs point to this SID
+ * - `MAX(r.ctime) AS last_ref`                         → latest reference timestamp
+ * - `FROM doc_refs r`                                  → aggregate on references
+ * - `LEFT JOIN documents d ON d.sid = r.dst_sid`       → check if the target doc already exists
+ * - `WHERE r.dst_id IS NULL`                           → only unresolved/unnormalized targets
+ * - `AND d.id IS NULL`                                 → and the document truly does not exist
+ * - `AND r.dst_sid LIKE $1 || ':%'`                    → keep only SIDs of the requested doctype
+ * - `GROUP BY r.dst_sid`                               → aggregate by target SID
+ * - `ORDER BY MAX(r.ctime) DESC, r.dst_sid ASC`        → newest first, tie-break by SID
+ * - `LIMIT $2 OFFSET $3`                               → pagination
+ *
+ * Example data:
+ * documents:
+ * | id | sid            |
+ * |----|----------------|
+ * | 10 | article:intro  |
+ * | 11 | user:alice     |
+ *
+ * doc_refs:
+ * | id | src_id | dst_id | dst_sid         | ctime               |
+ * |----|--------|--------|-----------------|---------------------|
+ * | 1  | 101    | NULL   | article:intro   | 2025-10-10 10:00:00 |
+ * | 2  | 102    | NULL   | article:setup   | 2025-10-10 11:00:00 |
+ * | 3  | 103    | NULL   | article:setup   | 2025-10-10 12:00:00 |
+ * | 4  | 104    | NULL   | article:install | 2025-10-10 09:30:00 |
+ * | 5  | 105    | 999    | article:advanced| 2025-10-10 12:30:00 |
+ * | 6  | 106    | NULL   | user:alice      | 2025-10-10 13:00:00 |
+ * | 8  | 108    | NULL   | article:tips    | 2025-10-10 08:00:00 |
+ *
+ * With `$1 = 'article'`:
+ * - Keep rows whose `dst_id IS NULL`, `documents.sid` is missing, and `dst_sid` starts with `article:`.
+ * - Remaining target SIDs: `article:setup` (2 refs), `article:install` (1 ref), `article:tips` (1 ref).
+ *
+ * Final grouped output:
+ * | sid              | type    | name     | ref_cnt | last_ref            |
+ * |------------------|---------|----------|---------|---------------------|
+ * | article:setup    | article | setup    | 2       | 2025-10-10 12:00:00 |
+ * | article:install  | article | install  | 1       | 2025-10-10 09:30:00 |
+ * | article:tips     | article | tips     | 1       | 2025-10-10 08:00:00 |
+ *
+ * @param doctype  The target document type to filter by (SID prefix before `:`).
+ * @param page     1-based page index for pagination.
+ * @param limit    Page size (max rows per page).
+ * @returns        Rows of missing targets with counts and last reference timestamps.
+ *
+ * @remarks
+ * Performance tips:
+ * - Add indexes on `doc_refs(dst_sid)`, `doc_refs(dst_id)`, `doc_refs(ctime)` and `documents(sid)`.
+ * - The prefix filter `dst_sid LIKE 'article:%'` benefits from a btree index because the left side is fixed.
+ * - For very large datasets, consider keyset pagination using `(last_ref, sid)` as a cursor instead of `OFFSET`.
+ *
+ * @example
+ * const { rows, total } = await listNeededDocuments('article', { page: 1, limit: 50 })
+ * // rows will be sorted by newest `last_ref` first, then `sid` ascending.
  */
 export async function listNeededDocuments(
   doctype: DocType,
@@ -90,7 +158,6 @@ export async function listNeededDocuments(
     [doctype]
   )
 
-  // 목록
   const rows = await q<NeededDocRow>(
     `
     SELECT r.dst_sid AS sid,
