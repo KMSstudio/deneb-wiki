@@ -29,7 +29,7 @@ export default async function MePage() {
       <div className={styles.form}>
         <div className={styles.field}>
           <span className={styles.label}>UID</span>
-          <span>{payload.uid}</span>
+          <span>{payload.uidx}</span>
         </div>
         <div className={styles.field}>
           <span className={styles.label}>Email</span>

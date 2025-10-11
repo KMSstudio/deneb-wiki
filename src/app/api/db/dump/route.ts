@@ -17,8 +17,8 @@ export async function GET() {
       return NextResponse.json({ ok: false, error: "invalid_token" }, { status: 401 });
     }
     const [exists, isAdmin] = await Promise.all([
-      userExistsIdx(user.uid),
-      isUserInGroup(user.uid, "group:admin"),
+      userExistsIdx(user.uidx),
+      isUserInGroup(user.uidx, "group:admin"),
     ]);
     if (!exists) {
       return NextResponse.json({ ok: false, error: "no_such_user" }, { status: 403 });

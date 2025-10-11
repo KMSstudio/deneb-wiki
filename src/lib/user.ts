@@ -271,9 +271,9 @@ export function issueJwt(user: User): string {
 /**
  * Verify JWT and return payload if valid.
  */
-export function verifyJwt(token: string): { uid: number; email: string; name: string } | null {
+export function verifyJwt(token: string): { uidx: number; email: string; name: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { uid: number; email: string; name: string };
+    return jwt.verify(token, JWT_SECRET) as { uidx: number; email: string; name: string };
   } catch {
     return null;
   }
