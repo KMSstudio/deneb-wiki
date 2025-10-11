@@ -1,0 +1,40 @@
+name: "🔧 Enhancement"
+description: Improve an existing behavior or component.
+title: "[Enhancement] <short summary>"
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: Current Behavior
+      description: What is suboptimal today?
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Proposed Improvement
+      description: Be specific about UX/API/perf changes.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      placeholder: Who benefits? How measurable?
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks / Trade-offs
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected Areas
+      placeholder: Files, modules, APIs, docs, etc.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked this is not a new feature request.
+          required: true
