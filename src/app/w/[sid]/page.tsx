@@ -1,11 +1,14 @@
 // @/app/w/[sid]/page.tsx
 
+// Document
 import { getDocument } from "@/lib/docs/docs";
 import type { Document, Article, Namespace } from "@/lib/docs/docs";
-import ArticleView from "./ArticleView";
-import Forbidden from "@/components/Forbidden";
-import { getRudByAcl } from "@/lib/docs/acl";
+// Authertication, ACLs
 import { getSessionUser } from "@/lib/auth";
+import { getRudByAcl } from "@/lib/docs/acl";
+import Forbidden from "@/components/Forbidden";
+// Document Views
+import ArticleView from "./ArticleView";
 import NamespaceView from "./NamespaceView";
 
 export const revalidate = 0;
