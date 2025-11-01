@@ -1,8 +1,11 @@
 // @/components/document/NamespaceView.tsx
-import DocumentTitle from "@/components/document/DocumentTitle";
-import DocumentNotFound from "@/components/document/DocumentNotFound";
+
+// Namespace
 import NamespaceViewList from "./NamespaceViewList";
 import type { Namespace } from "@/lib/docs/docs";
+// Document Components
+import DocumentTitle from "@/components/document/DocumentTitle";
+import DocumentNotFound from "@/components/document/DocumentNotFound";
 
 type Props = {
   namespace: Namespace | null;
