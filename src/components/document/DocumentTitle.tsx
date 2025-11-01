@@ -5,8 +5,7 @@ import s from "@/styles/document/document.module.css";
 
 type Props = { sid: string; right?: React.ReactNode; className?: string };
 
-const displayOf = (sid: string) =>
-  sid.startsWith("article:") ? sid.slice("article:".length) : sid;
+const displayOf = (sid: string) => (sid.startsWith("article:") ? sid.slice("article:".length) : sid);
 
 export default function DocumentTitle({ sid, right, className }: Props) {
   const display = displayOf(sid);

@@ -11,13 +11,7 @@ import DocumentNotFound from "@/components/document/DocumentNotFound";
 // Style
 import "@/styles/document/article.css";
 
-export default async function ArticleView({
-  article,
-  sid,
-}: {
-  article: Article | null;
-  sid: string;
-}) {
+export default async function ArticleView({ article, sid }: { article: Article | null; sid: string }) {
   if (!article) {
     return (
       <article className="article">

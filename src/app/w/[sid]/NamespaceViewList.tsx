@@ -14,9 +14,7 @@ type Props = {
 const displayOf = (sid: string) => (sid.startsWith("article:") ? sid.slice(8) : sid);
 const typeOf = (sid: string) => sid.split(":")[0];
 
-export default function NamespaceViewList({
-  sid, items, currentPage, pageSize = 144, className,
-}: Props) {
+export default function NamespaceViewList({ sid, items, currentPage, pageSize = 144, className }: Props) {
   const total = Math.max(1, Math.ceil(items.length / pageSize));
   const page = Math.min(Math.max(1, currentPage), total);
   const start = (page - 1) * pageSize;

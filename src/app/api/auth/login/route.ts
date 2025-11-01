@@ -1,7 +1,7 @@
 // @/app/api/auth/login/route.ts
 
 import { NextResponse } from "next/server";
-import { issueJwt } from "@/lib/auth"
+import { issueJwt } from "@/lib/auth";
 import { verifyUserLocal } from "@/lib/docs/user";
 
 export async function POST(req: Request) {

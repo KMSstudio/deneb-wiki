@@ -1,7 +1,7 @@
 // @/app/api/oauth/google/route.ts
 
 import { NextResponse } from "next/server";
-import { issueJwt } from "@/lib/auth"
+import { issueJwt } from "@/lib/auth";
 import { getUserByOAuth } from "@/lib/docs/user";
 
 export async function GET(req: Request) {
