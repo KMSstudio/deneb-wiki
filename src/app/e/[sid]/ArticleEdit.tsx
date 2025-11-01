@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Article } from "@/lib/docs";
+import type { Article } from "@/lib/docs/docs";
 import "@/styles/document/article.css";
 
 export default function ArticleEdit({ sid, article }: { sid: string; article: Article | null }) {

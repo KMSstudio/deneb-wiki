@@ -10,11 +10,11 @@ import type {
   SetdGroup,
   SetdAcl,
   SetAclEntry,
-} from "@/lib/docs";
-import { parseSid, getDocumentBySid, setDocument } from "@/lib/docs";
+} from "@/lib/docs/docs";
+import { parseSid, getDocumentBySid, setDocument } from "@/lib/docs/docs";
 import type { EditResponse } from "@/types/api";
-import { extractRefsFromArticle, extractTocFromArticle } from "@/lib/article";
-import { Rud, getRudByAcl, extractRefsFromAclEntries, extractSetAclEntries } from "@/lib/acl";
+import { extractRefsFromArticle, extractTocFromArticle } from "@/lib/docs/article";
+import { Rud, getRudByAcl, extractRefsFromAclEntries, extractSetAclEntries } from "@/lib/docs/acl";
 
 function intOrNull(v: unknown): number | null {
   const n = Number(v);

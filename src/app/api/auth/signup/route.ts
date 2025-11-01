@@ -1,7 +1,7 @@
 // @/app/api/auth/signup/route.ts
 
 import { NextResponse } from "next/server";
-import { createUserLocal, issueJwt } from "@/lib/user";
+import { createUserLocal, issueJwt } from "@/lib/docs/user";
 
 export async function POST(req: Request) {
   try {

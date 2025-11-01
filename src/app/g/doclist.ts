@@ -1,7 +1,7 @@
 // @/app/list/[doctype]/listDocs.ts
 
 // TYPE
-import { DocType, DocRaw } from "@/lib/docs"
+import { DocType, DocRaw } from "@/lib/docs/docs"
 
 export interface ListResult {
   rows: DocRaw[]

@@ -12,7 +12,7 @@ PAGES
 /g/search?c=검색내용*: 검색
 /g/article/short*: 짧은 문서 보기
 /g/article/long*: 긴 문서 보기
-/g/list/doctype: doctype의 문서 보기
+/g/list/doctype: doctype의 모든 문서 보기
 /g/need/doctype: 필요한 doctype의 문서 보기
 /g/random: 랜덤한 문서로 이동
 

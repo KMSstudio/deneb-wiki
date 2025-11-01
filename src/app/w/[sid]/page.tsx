@@ -1,32 +1,19 @@
 // @/app/w/[sid]/page.tsx
 
-import { getDocument } from "@/lib/docs";
-import type { Document, Article } from "@/lib/docs";
+import { getDocument } from "@/lib/docs/docs";
+import type { Document, Article } from "@/lib/docs/docs";
 import ArticleView from "./ArticleView";
 import Forbidden from "@/components/Forbidden";
-import { cookies } from "next/headers";
-import { getRudByAcl } from "@/lib/acl";
-import { verifyJwt } from "@/lib/user";
+import { getRudByAcl } from "@/lib/docs/acl";
+import { getSessionUser } from "@/lib/auth";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
-/** Extract user index from cookie("session") via verifyJwt. */
-async function getUserIdxFromCookie(): Promise<number | null> {
-  try {
-    const jar = await cookies();
-    const token = jar.get("session")?.value;
-    if (!token) return null;
-    return verifyJwt(token)?.uidx ?? null;
-  } catch {
-    return null;
-  }
-}
-
 /** Check READ permission for given acl_id. */
 async function isReadAllowed(aclId: number | null): Promise<boolean> {
-  const userIdx = await getUserIdxFromCookie();
-  const rud = await getRudByAcl(aclId ?? null, userIdx);
+  const userIdx: number | null =  (await getSessionUser())?.idx ?? null;
+  const rud = await getRudByAcl(aclId, userIdx);
   return !!rud.read;
 }
 

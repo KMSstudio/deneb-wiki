@@ -1,10 +1,10 @@
 // @/app/w/[sid]/ArticleView.tsx
 
-import type { Article } from "@/lib/docs";
+import type { Article } from "@/lib/docs/docs";
 import Link from "next/link";
 import Markdown from "@/components/Markdown";
 import "@/styles/document/article.css";
-import { makeArticleContent } from "@/lib/article";
+import { makeArticleContent } from "@/lib/docs/article";
 
 export function ArticleTitle({ sid }: { sid: string }) {
   const display = sid.replace(/^article:/, "");

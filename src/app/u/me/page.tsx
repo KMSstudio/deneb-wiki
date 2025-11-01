@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { verifyJwt } from "@/lib/user";
+import { verifyJwt } from "@/lib/auth";
 import styles from "@/styles/auth.module.css";
 
 export default async function MePage() {
@@ -29,7 +29,7 @@ export default async function MePage() {
       <div className={styles.form}>
         <div className={styles.field}>
           <span className={styles.label}>UID</span>
-          <span>{payload.uidx}</span>
+          <span>{payload.idx}</span>
         </div>
         <div className={styles.field}>
           <span className={styles.label}>Email</span>

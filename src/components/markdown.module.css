@@ -8,6 +8,8 @@
   padding: 24px;
 }
 
+.markdown :target { scroll-margin-top: 72px; }
+
 /* Code Block ``` ``` */
 .markdown pre {
   background-color: #161b22 !important;

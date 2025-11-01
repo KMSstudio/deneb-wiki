@@ -1,5 +1,5 @@
-import { getDocument } from "@/lib/docs";
-import type { Article } from "@/lib/docs";
+import { getDocument } from "@/lib/docs/docs";
+import type { Article } from "@/lib/docs/docs";
 import ArticleEdit from "./ArticleEdit";
 
 export const revalidate = 0;

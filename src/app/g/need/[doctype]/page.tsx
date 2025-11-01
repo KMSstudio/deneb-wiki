@@ -1,7 +1,7 @@
 // @/app/need/[doctype]/page.tsx
 
 import Link from "next/link"
-import type { DocType } from "@/lib/docs"
+import type { DocType } from "@/lib/docs/docs"
 import { ALLOWED_DOCTYPES, normalizeDoctype, listNeededDocuments } from "@/app/g/doclist"
 
 export const dynamic = "force-dynamic"

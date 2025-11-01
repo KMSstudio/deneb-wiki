@@ -2,7 +2,8 @@
 
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { verifyJwt, userExistsIdx, isUserInGroup } from "@/lib/user";
+import { userExistsIdx, isUserInGroup } from "@/lib/docs/user";
+import { verifyJwt } from "@/lib/auth"
 import { dump } from "@/lib/db";
 
 export async function GET() {
@@ -17,8 +18,8 @@ export async function GET() {
       return NextResponse.json({ ok: false, error: "invalid_token" }, { status: 401 });
     }
     const [exists, isAdmin] = await Promise.all([
-      userExistsIdx(user.uidx),
-      isUserInGroup(user.uidx, "group:admin"),
+      userExistsIdx(user.idx),
+      isUserInGroup(user.idx, "group:admin"),
     ]);
     if (!exists) {
       return NextResponse.json({ ok: false, error: "no_such_user" }, { status: 403 });
