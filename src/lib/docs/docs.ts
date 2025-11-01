@@ -1,6 +1,6 @@
 // @/lib/docs.ts
 
-import { q, one } from "./db";
+import { q, one } from "../db";
 
 export type DocType = "article" | "namespace" | "user" | "group" | "acl";
 

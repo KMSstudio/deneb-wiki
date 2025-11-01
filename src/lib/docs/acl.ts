@@ -2,7 +2,7 @@
 
 // @/lib/acl.ts
 import { q } from "@/lib/db";
-import type { RUDMask, AclEntry, SetAclEntry } from "./docs";
+import type { RUDMask, AclEntry, SetAclEntry } from "@/lib/docs/docs";
 
 // ─────────────────────────────────────────────────────────
 // RUD CLASS

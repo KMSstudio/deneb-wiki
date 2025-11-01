@@ -1,10 +1,7 @@
 // @/lib/user.ts
-import { setDocument, getDocument, getDocumentBySid, type SetdGroup } from "@/lib/docs";
+import { setDocument, getDocument, getDocumentBySid, type SetdGroup } from "@/lib/docs/docs";
 import { q, one } from "@/lib/db";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
 
 export type UserInfo = {
   major?: string;
@@ -102,10 +99,10 @@ async function addUserToGroup(userIdx: number, groupName: string) {
 /**
  * Check if given user exists on documents table by ID
  */
-export async function userExistsId(userId: number): Promise<boolean> {
+export async function userExistsId(documentId: number): Promise<boolean> {
   const row = await one<{ id: number }>(
     `SELECT id FROM documents WHERE type='user' AND id=$1`,
-    [userId]
+    [documentId]
   );
   return !!row;
 }
@@ -257,24 +254,4 @@ export async function createUserOAuth(
   }
 
   return user;
-}
-
-/**
- * Issue a JWT for the given user.
- */
-export function issueJwt(user: User): string {
-  return jwt.sign({ uid: user.idx, email: user.email, name: user.name }, JWT_SECRET, {
-    expiresIn: "7d",
-  });
-}
-
-/**
- * Verify JWT and return payload if valid.
- */
-export function verifyJwt(token: string): { uidx: number; email: string; name: string } | null {
-  try {
-    return jwt.verify(token, JWT_SECRET) as { uidx: number; email: string; name: string };
-  } catch {
-    return null;
-  }
 }
