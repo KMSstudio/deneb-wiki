@@ -33,7 +33,7 @@ type ArticleLike = Base & {
   toc: string;
 };
 
-export type Namespace = Base & { type: "namespace"; articles: string[] };
+export type Namespace = Base & { type: "namespace"; documents: string[] };
 export type Article = ArticleLike & { type: "article"; namespaces: string[] };
 export type dUser = ArticleLike & { type: "user"; user_idx: number };
 export type dGroup = ArticleLike & { type: "group"; members: number[] };
@@ -127,7 +127,7 @@ export async function getNamespacesOfArticle(articleId: number) {
   );
 }
 
-export async function listArticlesInNamespace(namespaceSid: string) {
+export async function listDocumentsInNamespace(namespaceSid: string) {
   return q<{ article_sid: string }>(
     `
     WITH ns AS (
@@ -138,7 +138,6 @@ export async function listArticlesInNamespace(namespaceSid: string) {
       FROM doc_refs r
       JOIN ns ON ns.id = r.src_id
       JOIN documents a ON a.id = r.dst_id
-     WHERE a.type = 'article'
     `,
     [namespaceSid],
   );
@@ -173,13 +172,13 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     }
 
     case "namespace": {
-      const nsMembers = (await listArticlesInNamespace(doc.sid)).map((r) => r.article_sid);
+      const nsMembers = (await listDocumentsInNamespace(doc.sid)).map((r) => r.article_sid);
       return {
         ...doc,
         type: "namespace",
         refs,
         links,
-        articles: nsMembers,
+        documents: nsMembers,
       };
     }
 

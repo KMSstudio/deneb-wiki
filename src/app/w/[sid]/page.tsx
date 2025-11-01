@@ -1,11 +1,12 @@
 // @/app/w/[sid]/page.tsx
 
 import { getDocument } from "@/lib/docs/docs";
-import type { Document, Article } from "@/lib/docs/docs";
+import type { Document, Article, Namespace } from "@/lib/docs/docs";
 import ArticleView from "./ArticleView";
 import Forbidden from "@/components/Forbidden";
 import { getRudByAcl } from "@/lib/docs/acl";
 import { getSessionUser } from "@/lib/auth";
+import NamespaceView from "./NamespaceView";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -38,6 +39,8 @@ export default async function Page({
       return <pre style={{ padding: 24 }}>{JSON.stringify(payload, null, 2)}</pre>;
     } else if (sid.startsWith("article:")) {
       return <ArticleView article={doc as Article | null} sid={sid} />;
+    } else if (sid.startsWith("namespace:")) {
+      return <NamespaceView namespace={doc as Namespace | null} sid={sid} />;
     }
 
     return <pre style={{ padding: 24 }}>{JSON.stringify(payload, null, 2)}</pre>;

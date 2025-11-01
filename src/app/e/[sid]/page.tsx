@@ -11,7 +11,6 @@ export default async function Page({ params }: { params: Promise<{ sid: string }
 
   if (sid.startsWith("article:")) {
     const doc = (await getDocument(sid)) as Article | null;
-
     return <ArticleEdit sid={sid} article={doc} />;
   }
 
