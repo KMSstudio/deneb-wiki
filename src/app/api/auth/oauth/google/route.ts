@@ -1,7 +1,8 @@
 // @/app/api/oauth/google/route.ts
 
 import { NextResponse } from "next/server";
-import { getUserByOAuth, issueJwt } from "@/lib/docs/user";
+import { issueJwt } from "@/lib/auth"
+import { getUserByOAuth } from "@/lib/docs/user";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

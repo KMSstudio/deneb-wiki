@@ -1,7 +1,8 @@
 // @/app/api/auth/oauth/signup/route.ts
 
 import { NextResponse } from "next/server";
-import { createUserOAuth, issueJwt } from "@/lib/docs/user";
+import { issueJwt } from "@/lib/auth"
+import { createUserOAuth } from "@/lib/docs/user";
 
 export async function POST(req: Request) {
   try {
