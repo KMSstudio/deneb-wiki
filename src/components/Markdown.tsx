@@ -69,9 +69,7 @@ const schema = {
 
 /** Escapes a string for safe use in a CSS `#id` selector. */
 const esc = (s: string): string =>
-  (CSS as any)?.escape
-    ? (CSS as any).escape(s)
-    : s.replace(/([ !"#$%&'()*+,./:;<=>?@\[\\\]^`{|}~])/g, "\\$1");
+  (CSS as any)?.escape ? (CSS as any).escape(s) : s.replace(/([ !"#$%&'()*+,./:;<=>?@\[\\\]^`{|}~])/g, "\\$1");
 
 /** Smoothly scrolls the container (or document) to the element matching the given hash id. */
 const scrollToId = (root: HTMLElement | Document | null, rawId: string): void => {
@@ -89,9 +87,8 @@ const scrollToId = (root: HTMLElement | Document | null, rawId: string): void =>
  * @param {() => HTMLElement | Document | null} getRoot - Lazy accessor for the scroll/search root.
  * @returns {Components["a"]} A custom anchor renderer.
  */
-const makeAnchor =
-  (getRoot: () => HTMLElement | Document | null): Components["a"] =>
-  ({ href, ...props }) => {
+const makeAnchor = (getRoot: () => HTMLElement | Document | null): Components["a"] =>
+  function MarkdownAnchor({ href, ...props }) {
     if (!href || !href.startsWith("#")) {
       return <a {...props} href={href} target="_blank" rel="noopener noreferrer" />;
     }

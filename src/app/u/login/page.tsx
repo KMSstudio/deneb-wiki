@@ -59,25 +59,13 @@ export default function LoginPage() {
           <label htmlFor="email" className={styles.label}>
             Email
           </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-          />
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={styles.input} />
         </div>
         <div className={styles.field}>
           <label htmlFor="password" className={styles.label}>
             Password
           </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-          />
+          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={styles.input} />
         </div>
         <button type="submit" className={styles.button}>
           Sign in

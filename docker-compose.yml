@@ -3,7 +3,7 @@ services:
     image: postgres:16
     container_name: gaist-psql
     ports:
-      - "${DB_PORT}:5432"             # http://localhost:6542
+      - "${DB_PORT}:5432" # http://localhost:6542
     env_file:
       - ./.env
     volumes:
@@ -24,7 +24,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "5050:80"             # http://localhost:5050
+      - "5050:80" # http://localhost:5050
     environment:
       PGADMIN_DEFAULT_EMAIL: ${DB_ADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${DM_ADMIN_PASSW}

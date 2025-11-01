@@ -25,10 +25,7 @@ export async function GET(req: Request) {
   }).then((r) => r.json());
 
   if (!tokenRes.access_token) {
-    return NextResponse.json(
-      { ok: false, error: "token_failed", detail: tokenRes },
-      { status: 400 },
-    );
+    return NextResponse.json({ ok: false, error: "token_failed", detail: tokenRes }, { status: 400 });
   }
 
   // 2. 사용자 프로필 가져오기

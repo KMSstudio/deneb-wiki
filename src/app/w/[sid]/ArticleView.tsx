@@ -20,13 +20,7 @@ export function ArticleTitle({ sid }: { sid: string }) {
   );
 }
 
-export default async function ArticleView({
-  article,
-  sid,
-}: {
-  article: Article | null;
-  sid: string;
-}) {
+export default async function ArticleView({ article, sid }: { article: Article | null; sid: string }) {
   if (!article) {
     return (
       <article className="article">
@@ -34,9 +28,7 @@ export default async function ArticleView({
         <div className="article-notfound">
           <p>문서가 없습니다.</p>
           <p>
-            <Link href={`/e/${encodeURIComponent(sid.replace(/^article:/, ""))}`}>
-              새 문서 만들기 →
-            </Link>
+            <Link href={`/e/${encodeURIComponent(sid.replace(/^article:/, ""))}`}>새 문서 만들기 →</Link>
           </p>
         </div>
       </article>

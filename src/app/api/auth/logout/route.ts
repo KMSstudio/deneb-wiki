@@ -9,9 +9,7 @@ export async function POST() {
 }
 
 export async function GET() {
-  const res = NextResponse.redirect(
-    new URL("/", process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
-  );
+  const res = NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"));
   res.cookies.set("session", "", { httpOnly: true, expires: new Date(0) });
   return res;
 }

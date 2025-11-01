@@ -60,25 +60,13 @@ export default function SignupPage() {
           <label htmlFor="email" className={styles.label}>
             Email
           </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-          />
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={styles.input} />
         </div>
         <div className={styles.field}>
           <label htmlFor="password" className={styles.label}>
             Password
           </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-          />
+          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={styles.input} />
         </div>
         <div className={styles.field}>
           <label htmlFor="passwordConfirm" className={styles.label}>
@@ -89,22 +77,14 @@ export default function SignupPage() {
             type="password"
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
-            className={`${styles.input} ${
-              passwordConfirm && (password !== passwordConfirm) ? styles.inputError : ""
-            }`}
+            className={`${styles.input} ${passwordConfirm && password !== passwordConfirm ? styles.inputError : ""}`}
           />
         </div>
         <div className={styles.field}>
           <label htmlFor="name" className={styles.label}>
             Name
           </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={styles.input}
-          />
+          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} className={styles.input} />
         </div>
         <button type="submit" className={styles.button}>
           Sign up

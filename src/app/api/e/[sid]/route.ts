@@ -1,16 +1,7 @@
 // @/app/api/e/[sid]/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import type {
-  DocType,
-  SetDocument,
-  SetArticle,
-  SetNamespace,
-  SetdUser,
-  SetdGroup,
-  SetdAcl,
-  SetAclEntry,
-} from "@/lib/docs/docs";
+import type { DocType, SetDocument, SetArticle, SetNamespace, SetdUser, SetdGroup, SetdAcl, SetAclEntry } from "@/lib/docs/docs";
 import { parseSid, getDocumentBySid, setDocument } from "@/lib/docs/docs";
 import type { EditResponse } from "@/types/api";
 import { extractRefsFromArticle, extractTocFromArticle } from "@/lib/docs/article";
@@ -21,19 +12,13 @@ function intOrNull(v: unknown): number | null {
   return Number.isInteger(n) ? n : null;
 }
 
-export async function POST(
-  req: NextRequest,
-  context: { params: Promise<{ sid: string }> },
-): Promise<NextResponse<EditResponse>> {
+export async function POST(req: NextRequest, context: { params: Promise<{ sid: string }> }): Promise<NextResponse<EditResponse>> {
   const raw: string = decodeURIComponent((await context.params).sid ?? "");
   const sid: string = raw.includes(":") ? raw : `article:${raw}`;
   const parsed = parseSid(sid);
 
   if (!parsed) {
-    return NextResponse.json(
-      { ok: false, error: "invalid_sid", sid },
-      { status: 400 },
-    ) as NextResponse<EditResponse>;
+    return NextResponse.json({ ok: false, error: "invalid_sid", sid }, { status: 400 }) as NextResponse<EditResponse>;
   }
 
   try {
@@ -67,15 +52,11 @@ export async function POST(
 
     switch (type) {
       case "article": {
-        const content_md: string | undefined =
-          typeof body?.content_md === "string" ? body.content_md : undefined;
+        const content_md: string | undefined = typeof body?.content_md === "string" ? body.content_md : undefined;
         let toc: string | undefined = undefined;
         let refs: string[] = [];
         if (content_md !== undefined) {
-          [toc, refs] = await Promise.all([
-            extractTocFromArticle(content_md),
-            extractRefsFromArticle(content_md),
-          ]);
+          [toc, refs] = await Promise.all([extractTocFromArticle(content_md), extractRefsFromArticle(content_md)]);
         }
         payload = {
           type: "article",
@@ -89,9 +70,7 @@ export async function POST(
       }
 
       case "namespace": {
-        const refs: string[] = Array.isArray(body?.refs)
-          ? body.refs.map((r: any) => String(r))
-          : [];
+        const refs: string[] = Array.isArray(body?.refs) ? body.refs.map((r: any) => String(r)) : [];
         payload = {
           type: "namespace",
           name,
@@ -102,22 +81,15 @@ export async function POST(
       }
 
       case "user": {
-        const content_md: string | undefined =
-          typeof body?.content_md === "string" ? body.content_md : undefined;
+        const content_md: string | undefined = typeof body?.content_md === "string" ? body.content_md : undefined;
         let toc: string | undefined = undefined;
         let refs: string[] = [];
         if (content_md !== undefined) {
-          [toc, refs] = await Promise.all([
-            extractTocFromArticle(content_md),
-            extractRefsFromArticle(content_md),
-          ]);
+          [toc, refs] = await Promise.all([extractTocFromArticle(content_md), extractRefsFromArticle(content_md)]);
         }
         const user_idx_req = intOrNull(body?.user_idx_req);
         if (user_idx_req === null) {
-          return NextResponse.json(
-            { ok: false, error: "invalid_user_idx_req", sid },
-            { status: 400 },
-          ) as NextResponse<EditResponse>;
+          return NextResponse.json({ ok: false, error: "invalid_user_idx_req", sid }, { status: 400 }) as NextResponse<EditResponse>;
         }
 
         // NOTE: If `current` is `null`, which means the document is `Creating` now,
@@ -136,15 +108,11 @@ export async function POST(
       }
 
       case "group": {
-        const content_md: string | undefined =
-          typeof body?.content_md === "string" ? body.content_md : undefined;
+        const content_md: string | undefined = typeof body?.content_md === "string" ? body.content_md : undefined;
         let toc: string | undefined = undefined;
         let refs: string[] = [];
         if (content_md !== undefined) {
-          [toc, refs] = await Promise.all([
-            extractTocFromArticle(content_md),
-            extractRefsFromArticle(content_md),
-          ]);
+          [toc, refs] = await Promise.all([extractTocFromArticle(content_md), extractRefsFromArticle(content_md)]);
         }
         const members: number[] = Array.isArray(body?.members)
           ? body.members.map((m: any) => Number(m)).filter((n: any) => Number.isInteger(n))
@@ -177,20 +145,14 @@ export async function POST(
       }
 
       default: {
-        return NextResponse.json(
-          { ok: false, error: "unsupported_type", sid, type },
-          { status: 400 },
-        ) as NextResponse<EditResponse>;
+        return NextResponse.json({ ok: false, error: "unsupported_type", sid, type }, { status: 400 }) as NextResponse<EditResponse>;
       }
     }
 
     const newId = await setDocument(payload);
     const action = current ? "updated" : "created";
 
-    return NextResponse.json(
-      { ok: true, action, sid, id: newId },
-      { status: 200 },
-    ) as NextResponse<EditResponse>;
+    return NextResponse.json({ ok: true, action, sid, id: newId }, { status: 200 }) as NextResponse<EditResponse>;
   } catch (err: any) {
     return NextResponse.json(
       {

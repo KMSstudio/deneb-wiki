@@ -84,13 +84,10 @@ export function makeArticleContent(contentMd: string, tocHtml: string): string {
 
   result = result.replace(/\[(?:toc|목차)\]\(\)/gi, tocHtml);
 
-  result = result.replace(
-    /\[([^\[\]\(\)]+)\]\(\)/g,
-    (_match, raw) => {
-      const sid = raw.includes(":") ? raw : `article:${raw}`;
-      return `[${raw}](/w/${sid})`;
-    }
-  );
+  result = result.replace(/\[([^\[\]\(\)]+)\]\(\)/g, (_match, raw) => {
+    const sid = raw.includes(":") ? raw : `article:${raw}`;
+    return `[${raw}](/w/${sid})`;
+  });
 
   return result;
 }

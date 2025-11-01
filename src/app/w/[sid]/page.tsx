@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 /** Check READ permission for given acl_id. */
 async function isReadAllowed(aclId: number | null): Promise<boolean> {
-  const userIdx: number | null =  (await getSessionUser())?.idx ?? null;
+  const userIdx: number | null = (await getSessionUser())?.idx ?? null;
   const rud = await getRudByAcl(aclId, userIdx);
   return !!rud.read;
 }
@@ -29,11 +29,11 @@ export default async function Page({
 
   try {
     const doc: Document | null = await getDocument(sid);
-    const allowed: boolean = (doc?.acl_id) ? (await isReadAllowed(doc.acl_id)) : true;
+    const allowed: boolean = doc?.acl_id ? await isReadAllowed(doc.acl_id) : true;
     const payload = doc ? { ok: true, sid, document: doc } : { ok: false, error: "not_found", sid };
 
     if (!allowed) {
-      return <Forbidden sid={sid} reason="no_read_permission" detail={{ acl_id: doc?.acl_id }} />
+      return <Forbidden sid={sid} reason="no_read_permission" detail={{ acl_id: doc?.acl_id }} />;
     } else if ((await searchParams)?.view === "raw") {
       return <pre style={{ padding: 24 }}>{JSON.stringify(payload, null, 2)}</pre>;
     } else if (sid.startsWith("article:")) {

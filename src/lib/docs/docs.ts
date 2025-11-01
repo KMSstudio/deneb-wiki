@@ -184,13 +184,8 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     }
 
     case "user": {
-      const art = await one<ArticleRow>(
-        `SELECT content_md, toc FROM articles WHERE id=$1`,
-        [doc.id],
-      );
-      const u = await one<{ user_idx: number }>(`SELECT user_idx FROM users_doc WHERE id=$1`, [
-        doc.id,
-      ]);
+      const art = await one<ArticleRow>(`SELECT content_md, toc FROM articles WHERE id=$1`, [doc.id]);
+      const u = await one<{ user_idx: number }>(`SELECT user_idx FROM users_doc WHERE id=$1`, [doc.id]);
       return {
         ...doc,
         type: "user",
@@ -203,17 +198,9 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     }
 
     case "group": {
-      const art = await one<ArticleRow>(
-        `SELECT content_md, toc FROM articles WHERE id=$1`,
-        [doc.id],
-      );
+      const art = await one<ArticleRow>(`SELECT content_md, toc FROM articles WHERE id=$1`, [doc.id]);
       // NOTE: Collect `user_idx` list from `group_members` table. -- KMSStudio
-      const members = (
-        await q<{ user_idx: number }>(
-          `SELECT user_idx FROM group_members WHERE group_id=$1 ORDER BY user_idx`,
-          [doc.id],
-        )
-      )
+      const members = (await q<{ user_idx: number }>(`SELECT user_idx FROM group_members WHERE group_id=$1 ORDER BY user_idx`, [doc.id]))
         .map((r) => r.user_idx)
         .map(Number);
       return {
@@ -405,9 +392,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
 
       await q(`DELETE FROM group_members WHERE group_id = $1`, [id]);
       if (g.members && g.members.length > 0) {
-        const uniq = Array.from(
-          new Set(g.members.filter((v) => Number.isInteger(v)).map((v) => Number(v))),
-        );
+        const uniq = Array.from(new Set(g.members.filter((v) => Number.isInteger(v)).map((v) => Number(v))));
         if (uniq.length > 0) {
           await q(
             `
@@ -465,10 +450,7 @@ export async function setDocument(input: SetDocument): Promise<number> {
   const refs = input.refs ?? [];
   await q(`DELETE FROM doc_refs WHERE src_id = $1`, [id]);
   if (refs.length) {
-    const rows = await q<{ sid: string; id: number }>(
-      `SELECT sid, id FROM documents WHERE sid = ANY($1::text[])`,
-      [refs],
-    );
+    const rows = await q<{ sid: string; id: number }>(`SELECT sid, id FROM documents WHERE sid = ANY($1::text[])`, [refs]);
     const sidToId = new Map(rows.map((r) => [r.sid, r.id]));
 
     const resolved: any[] = [];

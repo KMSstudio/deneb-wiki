@@ -1,26 +1,24 @@
 // @/app/list/[doctype]/listDocs.ts
 
 // TYPE
-import { DocType, DocRaw } from "@/lib/docs/docs"
+import { DocType, DocRaw } from "@/lib/docs/docs";
 
 export interface ListResult {
-  rows: DocRaw[]
-  total: number
+  rows: DocRaw[];
+  total: number;
 }
 
 // CONST
-export const ALLOWED_DOCTYPES: DocType[] = [
-  "article","namespace","user","group","acl"
-]
+export const ALLOWED_DOCTYPES: DocType[] = ["article", "namespace", "user", "group", "acl"];
 
 // UTIL
 export const normalizeDoctype = (t: string): DocType | null => {
-  const v = t.trim().toLowerCase()
-  return (ALLOWED_DOCTYPES.includes(v as DocType) ? v as DocType : null)
-}
+  const v = t.trim().toLowerCase();
+  return ALLOWED_DOCTYPES.includes(v as DocType) ? (v as DocType) : null;
+};
 
 // DAO
-import { q, one } from "@/lib/db"
+import { q, one } from "@/lib/db";
 
 // =====================
 // Listing docs
@@ -28,14 +26,11 @@ import { q, one } from "@/lib/db"
 
 export async function listDocumentsByType(
   doctype: DocType,
-  { page=1, limit=50 }: { page?: number; limit?: number } = {}
+  { page = 1, limit = 50 }: { page?: number; limit?: number } = {},
 ): Promise<ListResult> {
-  const offset = (page-1)*limit
+  const offset = (page - 1) * limit;
 
-  const totalRow = await one<{ cnt: number }>(
-    `SELECT COUNT(*)::int AS cnt FROM documents WHERE type=$1`,
-    [doctype]
-  )
+  const totalRow = await one<{ cnt: number }>(`SELECT COUNT(*)::int AS cnt FROM documents WHERE type=$1`, [doctype]);
 
   const rows = await q<DocRaw>(
     `SELECT id, sid, type::text AS type, name, acl_id, mtime, ctime
@@ -43,10 +38,10 @@ export async function listDocumentsByType(
       WHERE type=$1
       ORDER BY mtime DESC NULLS LAST, sid ASC
       LIMIT $2 OFFSET $3`,
-    [doctype, limit, offset]
-  )
+    [doctype, limit, offset],
+  );
 
-  return { rows, total: totalRow?.cnt || 0 }
+  return { rows, total: totalRow?.cnt || 0 };
 }
 
 // =====================
@@ -54,16 +49,16 @@ export async function listDocumentsByType(
 // =====================
 
 export interface NeededDocRow {
-  sid: string
-  type: DocType
-  name: string
-  ref_cnt: number
-  last_ref: Date | null
+  sid: string;
+  type: DocType;
+  name: string;
+  ref_cnt: number;
+  last_ref: Date | null;
 }
 
 export interface NeededListResult {
-  rows: NeededDocRow[]
-  total: number
+  rows: NeededDocRow[];
+  total: number;
 }
 
 /**
@@ -141,9 +136,9 @@ export interface NeededListResult {
  */
 export async function listNeededDocuments(
   doctype: DocType,
-  { page=1, limit=50 }: { page?: number; limit?: number } = {}
+  { page = 1, limit = 50 }: { page?: number; limit?: number } = {},
 ): Promise<NeededListResult> {
-  const offset = (page-1)*limit
+  const offset = (page - 1) * limit;
 
   // 총 개수
   const totalRow = await one<{ cnt: number }>(
@@ -155,8 +150,8 @@ export async function listNeededDocuments(
        AND d.id IS NULL
        AND r.dst_sid LIKE $1 || ':%'
     `,
-    [doctype]
-  )
+    [doctype],
+  );
 
   const rows = await q<NeededDocRow>(
     `
@@ -174,8 +169,8 @@ export async function listNeededDocuments(
      ORDER BY MAX(r.ctime) DESC NULLS LAST, r.dst_sid ASC
      LIMIT $2 OFFSET $3
     `,
-    [doctype, limit, offset]
-  )
+    [doctype, limit, offset],
+  );
 
-  return { rows, total: totalRow?.cnt || 0 }
+  return { rows, total: totalRow?.cnt || 0 };
 }

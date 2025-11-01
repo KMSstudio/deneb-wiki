@@ -15,9 +15,5 @@ export default async function Page({ params }: { params: Promise<{ sid: string }
     return <ArticleEdit sid={sid} article={doc} />;
   }
 
-  return (
-    <pre style={{ padding: 24 }}>
-      {JSON.stringify({ ok: false, error: "edit_not_supported", sid }, null, 2)}
-    </pre>
-  );
+  return <pre style={{ padding: 24 }}>{JSON.stringify({ ok: false, error: "edit_not_supported", sid }, null, 2)}</pre>;
 }

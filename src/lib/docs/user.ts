@@ -66,14 +66,11 @@ export async function isUserInGroup(userIdx: number, groupSid: string): Promise<
        FROM documents d
        JOIN groups_doc g ON g.id = d.id
       WHERE d.sid=$1 AND d.type='group'`,
-    [groupSid]
+    [groupSid],
   );
   if (!group) return false;
 
-  const ref = await one<{ id: number }>(
-    `SELECT id FROM group_members WHERE group_id=$1 AND user_idx=$2`,
-    [group.id, userIdx]
-  );
+  const ref = await one<{ id: number }>(`SELECT id FROM group_members WHERE group_id=$1 AND user_idx=$2`, [group.id, userIdx]);
   return !!ref;
 }
 
@@ -100,10 +97,7 @@ async function addUserToGroup(userIdx: number, groupName: string) {
  * Check if given user exists on documents table by ID
  */
 export async function userExistsId(documentId: number): Promise<boolean> {
-  const row = await one<{ id: number }>(
-    `SELECT id FROM documents WHERE type='user' AND id=$1`,
-    [documentId]
-  );
+  const row = await one<{ id: number }>(`SELECT id FROM documents WHERE type='user' AND id=$1`, [documentId]);
   return !!row;
 }
 
@@ -111,29 +105,18 @@ export async function userExistsId(documentId: number): Promise<boolean> {
  * Check if given user exists on user table by INDEX
  */
 export async function userExistsIdx(userIdx: number): Promise<boolean> {
-  const row = await one<{ idx: number }>(
-    `SELECT idx FROM auth_users WHERE idx=$1`,
-    [userIdx]
-  );
+  const row = await one<{ idx: number }>(`SELECT idx FROM auth_users WHERE idx=$1`, [userIdx]);
   return !!row;
 }
 
 /**
  * Create a local user with email/password.
  */
-export async function createUserLocal(
-  email: string,
-  password: string,
-  name: string,
-  info?: UserInfo,
-): Promise<User> {
+export async function createUserLocal(email: string, password: string, name: string, info?: UserInfo): Promise<User> {
   const hashed = await bcrypt.hash(password, 10);
 
   // check existing credential
-  const existingCred = await one<{ id: number }>(
-    `SELECT id FROM credentials WHERE email=$1 AND provider='local'`,
-    [email],
-  );
+  const existingCred = await one<{ id: number }>(`SELECT id FROM credentials WHERE email=$1 AND provider='local'`, [email]);
   if (existingCred) throw new Error("local_credential_already_exists");
 
   // create user
@@ -190,14 +173,8 @@ export async function verifyUserLocal(email: string, password: string): Promise<
 /**
  * Get user by OAuth credential.
  */
-export async function getUserByOAuth(
-  email: string,
-  provider: "google" | "github",
-): Promise<User | null> {
-  const cred = await one<{ user_idx: number }>(
-    `SELECT user_idx FROM credentials WHERE email=$1 AND provider=$2`,
-    [email, provider],
-  );
+export async function getUserByOAuth(email: string, provider: "google" | "github"): Promise<User | null> {
+  const cred = await one<{ user_idx: number }>(`SELECT user_idx FROM credentials WHERE email=$1 AND provider=$2`, [email, provider]);
   if (!cred) return null;
 
   const userRow = await one<any>(`SELECT * FROM auth_users WHERE idx=$1`, [cred.user_idx]);
@@ -207,16 +184,8 @@ export async function getUserByOAuth(
 /**
  * Create user via OAuth. If email already exists, reuse the account.
  */
-export async function createUserOAuth(
-  email: string,
-  name: string,
-  provider: "google" | "github",
-  info?: UserInfo,
-): Promise<User> {
-  const existingCred = await one<{ id: number }>(
-    `SELECT id FROM credentials WHERE email=$1 AND provider=$2`,
-    [email, provider],
-  );
+export async function createUserOAuth(email: string, name: string, provider: "google" | "github", info?: UserInfo): Promise<User> {
+  const existingCred = await one<{ id: number }>(`SELECT id FROM credentials WHERE email=$1 AND provider=$2`, [email, provider]);
   if (existingCred) throw new Error("oauth_credential_already_exists");
 
   let userRow = await one<any>(`SELECT * FROM auth_users WHERE email=$1 LIMIT 1`, [email]);

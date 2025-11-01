@@ -18,7 +18,9 @@ export default function Forbidden({ sid, reason, detail }: Props) {
           <pre className={styles.pre}>{JSON.stringify(detail, null, 2)}</pre>
         </details>
       ) : null}
-      <Link href="/" className={styles.home}>Home</Link>
+      <Link href="/" className={styles.home}>
+        Home
+      </Link>
     </main>
   );
 }

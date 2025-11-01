@@ -5,7 +5,9 @@ import type { User } from "@/lib/docs/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-if (!JWT_SECRET) { throw new Error("JWT_SECRET is not set"); }
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not set");
+}
 
 export type SessionUser = { idx: number; email: string; name?: string };
 
@@ -16,11 +18,7 @@ export type SessionUser = { idx: number; email: string; name?: string };
  * @returns Signed JWT string
  */
 export function issueJwt(user: User): string {
-  return jwt.sign(
-    { sub: String(user.idx), email: user.email, name: user.name },
-    JWT_SECRET,
-    { expiresIn: "7d", algorithm: "HS256" }
-  );
+  return jwt.sign({ sub: String(user.idx), email: user.email, name: user.name }, JWT_SECRET, { expiresIn: "7d", algorithm: "HS256" });
 }
 
 /**

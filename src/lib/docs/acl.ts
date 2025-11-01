@@ -104,9 +104,7 @@ function applyAclEntry(current: RUDMask, entry: AclEntry): RUDMask {
  * @param user_doc_id - users_doc.id (document id of type "user")
  */
 async function isUserSame(user_idx: number, user_doc_id: number): Promise<boolean> {
-  const row = await q<{ user_idx: number }>(`SELECT user_idx FROM users_doc WHERE id = $1`, [
-    user_doc_id,
-  ]);
+  const row = await q<{ user_idx: number }>(`SELECT user_idx FROM users_doc WHERE id = $1`, [user_doc_id]);
   return row.length > 0 && row[0].user_idx === user_idx;
 }
 
@@ -159,7 +157,5 @@ export function extractSetAclEntries(raw: any): SetAclEntry[] {
  * @returns {string[]} list of target_sid values
  */
 export function extractRefsFromAclEntries(entries: AclEntry[] | SetAclEntry[]): string[] {
-  return entries
-    .map((e) => e.target_sid)
-    .filter((sid): sid is string => typeof sid === "string" && sid.length > 0);
+  return entries.map((e) => e.target_sid).filter((sid): sid is string => typeof sid === "string" && sid.length > 0);
 }

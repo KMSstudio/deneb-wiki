@@ -18,9 +18,6 @@ export async function POST(req: Request) {
     res.cookies.set("session", token, { httpOnly: true });
     return res;
   } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err.message || "oauth_signup_failed" },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, error: err.message || "oauth_signup_failed" }, { status: 500 });
   }
 }

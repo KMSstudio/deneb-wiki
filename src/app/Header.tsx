@@ -24,11 +24,7 @@ export default function Header() {
 
         <div className={styles.right}>
           <button className={styles.randomBtn}>🔀</button>
-          <input
-            type="text"
-            placeholder="여기에서 검색"
-            className={styles.search}
-          />
+          <input type="text" placeholder="여기에서 검색" className={styles.search} />
           <button className={styles.searchBtn}>🔍</button>
         </div>
       </nav>
