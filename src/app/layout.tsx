@@ -1,8 +1,13 @@
 // @/app/layout.tsx
-import type { Metadata } from "next";
+
+// Font
 import { Geist, Geist_Mono } from "next/font/google";
-import "@/styles/globals.css";
+// Metadata
+import type { Metadata } from "next";
+// Styles
 import Header from "@/app/Header";
+import "@/styles/globals.css";
+import "@/styles/theme.css"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });

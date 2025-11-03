@@ -44,7 +44,7 @@ export async function extractRefsFromArticle(contentMd: string): Promise<string[
 }
 
 /**
- * Convert markdown into HTML, extract h1–h4 headings,
+ * Convert markdown into HTML, extract h1-h4 headings,
  * and return a serialized Table of Contents as an HTML fragment.
  *
  * @param contentMd - Raw markdown content

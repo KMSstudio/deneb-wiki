@@ -1,29 +1,45 @@
-// @/app/w/[sid]/NamespaceView.tsx
+// @/app/w/[sid]/NamespaceViewList.tsx
 
+"use client";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import s from "@/styles/document/document.module.css";
+import s from "@/styles/document/namespace.module.css";
 
 type Props = {
   sid: string;
   items: string[];
-  currentPage: number;
-  pageSize?: number;
+  pageSize?: number;    // default: 144
   className?: string;
 };
 
 const displayOf = (sid: string) => (sid.startsWith("article:") ? sid.slice(8) : sid);
 const typeOf = (sid: string) => sid.split(":")[0];
 
-export default function NamespaceViewList({ sid, items, currentPage, pageSize = 144, className }: Props) {
+/**
+ * Client-side paginated namespace list.
+ * Renders a compact, one-line-per-item list of SIDs with in-place pagination controls.
+ */
+export default function NamespaceListView({ /* sid, */ items, pageSize = 144, className }: Props) {
+  const [page, setPage] = useState(1);
   const total = Math.max(1, Math.ceil(items.length / pageSize));
-  const page = Math.min(Math.max(1, currentPage), total);
-  const start = (page - 1) * pageSize;
-  const pageItems = items.slice(start, start + pageSize);
 
-  const cls = [s.nsListWrap, className].filter(Boolean).join(" ");
+  // Slice items for current page
+  const pageItems = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return items.slice(start, start + pageSize);
+  }, [items, page, pageSize]);
+
+  // Page navigation helpers
+  const goto = (n: number) => setPage(Math.min(Math.max(1, n), total));
+  const prev = () => goto(page - 1);
+  const next = () => goto(page + 1);
+
+  const wrapCls = [s.nsListWrap, className].filter(Boolean).join(" ");
 
   return (
-    <section className={cls}>
+    <section className={wrapCls} aria-label="Namespace documents">
+      {/* === LIST: current page items === */}
       <ul className={s.nsListPage}>
         {pageItems.map((docSid) => (
           <li key={docSid} className={s.nsItem}>
@@ -33,45 +49,44 @@ export default function NamespaceViewList({ sid, items, currentPage, pageSize = 
             </Link>
           </li>
         ))}
+        {pageItems.length === 0 && <li className={s.nsItem}>No items to display.</li>}
       </ul>
 
+      {/* === PAGER: only when multiple pages exist === */}
       {total > 1 && (
-        <nav className={s.nsPager} aria-label="페이지네이션">
-          <Link
+        <nav className={s.nsPager} aria-label="Pagination">
+          <button
             className={s.nsPagerBtn + (page <= 1 ? ` ${s.isDisabled}` : "")}
-            href={{ pathname: `/w/${encodeURIComponent(sid)}`, query: { p: page - 1 } }}
-            aria-disabled={page <= 1}
-            prefetch={false}
+            onClick={prev}
+            disabled={page <= 1}
           >
-            이전
-          </Link>
+            Prev
+          </button>
 
           <span className={s.nsPagerPages}>
             {Array.from({ length: total }, (_, i) => {
               const n = i + 1;
-              const current = n === page;
+              const active = n === page;
               return (
-                <Link
+                <button
                   key={n}
-                  className={s.nsPagerNum + (current ? ` ${s.isActive}` : "")}
-                  href={{ pathname: `/w/${encodeURIComponent(sid)}`, query: { p: n } }}
-                  aria-current={current ? "page" : undefined}
-                  prefetch={false}
+                  className={s.nsPagerNum + (active ? ` ${s.isActive}` : "")}
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => goto(n)}
                 >
                   {n}
-                </Link>
+                </button>
               );
             })}
           </span>
 
-          <Link
+          <button
             className={s.nsPagerBtn + (page >= total ? ` ${s.isDisabled}` : "")}
-            href={{ pathname: `/w/${encodeURIComponent(sid)}`, query: { p: page + 1 } }}
-            aria-disabled={page >= total}
-            prefetch={false}
+            onClick={next}
+            disabled={page >= total}
           >
-            다음
-          </Link>
+            Next
+          </button>
         </nav>
       )}
     </section>
