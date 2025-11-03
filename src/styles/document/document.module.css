@@ -103,6 +103,32 @@
   text-decoration: underline;
 }
 
+/* NAMESPACE EDIT */
+.nsEditWrap{margin-top:1rem;display:flex;flex-direction:column;gap:1rem}
+.nsEditRow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.nsEditLabel{font-weight:600}
+.nsEditSelect{padding:.35rem .5rem;border:1px solid #d1d5db;border-radius:.5rem;background:#fff}
+.nsEditColon{opacity:.6}
+.nsEditInput{min-width:16rem;flex:1 1 16rem;padding:.4rem .6rem;border:1px solid #d1d5db;border-radius:.5rem}
+.nsEditBtn{padding:.4rem .7rem;border:1px solid #d1d5db;border-radius:.5rem;background:#fff;cursor:pointer}
+.nsEditBtn:hover{background:#f3f4f6}
+
+.nsEditList{list-style:none;margin:0;padding:0;border:1px solid #eef2f7;border-radius:.75rem}
+.nsEditItem{display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;border-bottom:1px dashed #eef2f7}
+.nsEditItem:last-child{border-bottom:none}
+.nsEditType{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;color:#6b7280}
+.nsEditLink{text-decoration:none;flex:1 1 auto}
+.nsEditLink:hover{text-decoration:underline}
+.nsEditDel{padding:.25rem .55rem;border:1px solid #fca5a5;border-radius:.5rem;background:#fff;color:#b91c1c;cursor:pointer}
+.nsEditDel:hover{background:#fef2f2}
+.nsEditEmpty{padding:.6rem;color:#6b7280}
+
+.nsEditActions{display:flex;align-items:flex-start;gap:.75rem;flex-wrap:wrap}
+.nsEditSave{padding:.45rem .8rem;border:1px solid #d1d5db;border-radius:.6rem;background:#fff;cursor:pointer}
+.nsEditSave:hover{background:#f3f4f6}
+.nsEditStatus{margin:0;padding:.6rem;border:1px dashed #d1d5db;border-radius:.6rem;background:#fafafa;max-height:18rem;overflow:auto}
+
+
 /* PAGER */
 .nsPager {
   display: flex;

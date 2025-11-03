@@ -42,7 +42,7 @@ export default async function NamespaceView({ namespace, sid, currentPage = 1, p
     );
   }
 
-  const items = sortSids(namespace.documents ?? []);
+  const items = sortSids(namespace.refs ?? []);
   return (
     <article className="article">
       <DocumentTitle sid={sid} />

@@ -33,7 +33,7 @@ type ArticleLike = Base & {
   toc: string;
 };
 
-export type Namespace = Base & { type: "namespace"; documents: string[] };
+export type Namespace = Base & { type: "namespace"; };
 export type Article = ArticleLike & { type: "article"; namespaces: string[] };
 export type dUser = ArticleLike & { type: "user"; user_idx: number };
 export type dGroup = ArticleLike & { type: "group"; members: number[] };
@@ -127,22 +127,6 @@ export async function getNamespacesOfArticle(articleId: number) {
   );
 }
 
-export async function listDocumentsInNamespace(namespaceSid: string) {
-  return q<{ article_sid: string }>(
-    `
-    WITH ns AS (
-      SELECT id FROM documents WHERE sid = $1 AND type = 'namespace'
-    )
-    -- namespace → article
-    SELECT a.sid AS article_sid
-      FROM doc_refs r
-      JOIN ns ON ns.id = r.src_id
-      JOIN documents a ON a.id = r.dst_id
-    `,
-    [namespaceSid],
-  );
-}
-
 /* ─────────────────────────────────────────────────────────
  * 메인: 상세 Document 로드 (sid 또는 단순 name)
  *  - ':' 없으면 article:${name} 로 해석
@@ -172,13 +156,11 @@ export async function getDocument(sidOrName: string): Promise<Document | null> {
     }
 
     case "namespace": {
-      const nsMembers = (await listDocumentsInNamespace(doc.sid)).map((r) => r.article_sid);
       return {
         ...doc,
         type: "namespace",
         refs,
         links,
-        documents: nsMembers,
       };
     }
 
