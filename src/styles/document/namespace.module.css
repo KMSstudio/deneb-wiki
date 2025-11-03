@@ -1,0 +1,95 @@
+/* @/styles/document/namespace.module.css */
+
+/* ===== NAMESPACE LIST ===== */
+.nsListWrap{margin-top:1rem}
+.nsListPage{list-style:none;margin:0;padding:0}
+.nsItem{
+  display:flex;gap:.5rem;align-items:center;padding:.25rem 0;
+  border-bottom:1px solid var(--color-divider)
+}
+.nsItem:last-child{border-bottom:none}
+.nsType{
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:.85rem;color:var(--color-muted)
+}
+.nsLink{
+  flex:1 1 auto;text-decoration:none;color:var(--color-link)
+}
+.nsLink:hover{text-decoration:underline}
+
+/* Pager */
+.nsPager{
+  display:flex;align-items:center;gap:.5rem;justify-content:center;
+  margin-top:1rem;flex-wrap:wrap
+}
+.nsPagerBtn,.nsPagerNum{
+  padding:.35rem .6rem;border:1px solid var(--color-border);
+  border-radius:.5rem;background:var(--color-surface);
+  color:var(--color-text);font-size:.9rem;text-decoration:none;cursor:pointer
+}
+.isDisabled{opacity:.5;pointer-events:none}
+.isActive{background:var(--color-surface-hover)}
+.nsPagerPages{display:flex;gap:.35rem}
+
+/* ===== NAMESPACE EDIT ===== */
+.nsEditWrap{margin-top:1rem;display:flex;flex-direction:column;gap:1rem}
+.nsEditRow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.nsEditLabel{font-weight:600;color:var(--color-text)}
+.nsEditSelect{
+  padding:.35rem .5rem;border:1px solid var(--color-border);
+  border-radius:.5rem;background:var(--color-surface);color:var(--color-text)
+}
+.nsEditColon{opacity:.6}
+.nsEditInput{
+  min-width:16rem;flex:1 1 16rem;padding:.4rem .6rem;
+  border:1px solid var(--color-border);border-radius:.5rem;
+  background:var(--color-surface);color:var(--color-text)
+}
+.nsEditBtn{
+  padding:.4rem .7rem;border:1px solid var(--color-border);
+  border-radius:.5rem;background:var(--color-surface);
+  color:var(--color-text);cursor:pointer
+}
+.nsEditBtn:hover{background:var(--color-surface-hover)}
+
+.nsEditList{
+  list-style:none;margin:0;padding:0;
+  border:1px solid var(--color-divider);border-radius:.75rem
+}
+.nsEditItem{
+  display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;
+  border-bottom:1px dashed var(--color-divider)
+}
+.nsEditItem:last-child{border-bottom:none}
+.nsEditType{
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:.85rem;color:var(--color-muted)
+}
+.nsEditLink{text-decoration:none;flex:1 1 auto;color:var(--color-link)}
+.nsEditLink:hover{text-decoration:underline}
+.nsEditDel{
+  padding:.25rem .55rem;border:1px solid var(--color-danger);
+  border-radius:.5rem;background:var(--color-surface);
+  color:var(--color-danger);cursor:pointer
+}
+.nsEditDel:hover{background:var(--color-surface-hover)}
+.nsEditEmpty{padding:.6rem;color:var(--color-muted)}
+
+.nsEditActions{display:flex;align-items:flex-start;gap:.75rem;flex-wrap:wrap}
+.nsEditSave{
+  padding:.45rem .8rem;border:1px solid var(--color-border);
+  border-radius:.6rem;background:var(--color-surface);
+  color:var(--color-text);cursor:pointer
+}
+.nsEditSave:hover{background:var(--color-surface-hover)}
+.nsEditStatus{
+  margin:0;padding:.6rem;border:1px dashed var(--color-border);
+  border-radius:.6rem;background:var(--color-surface-hover);
+  max-height:18rem;overflow:auto;color:var(--color-text)
+}
+
+/* ===== Responsive ===== */
+@media (max-width:640px){
+  .nsEditInput{min-width:12rem}
+  .nsPagerBtn,.nsPagerNum{font-size:.85rem}
+}

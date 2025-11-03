@@ -1,0 +1,98 @@
+/* /styles/theme.css
+   Minimal, app-wide color tokens + light/dark/contrast themes
+   ---------------------------------------------------------- */
+
+/* Base (light default) */
+:root {
+  color-scheme: light dark;
+
+  /* Core surfaces */
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f3f4f6;
+
+  /* Text */
+  --color-text: #111827;
+  --color-muted: #6b7280;
+  --color-link: var(--color-text);
+
+  /* Lines */
+  --color-border: #d1d5db;
+  --color-divider: #e5e7eb;
+
+  /* Accents */
+  --color-accent: #2563eb;   /* primary accent (links, focus) */
+  --color-danger: #b91c1c;   /* destructive */
+}
+
+/* Dark (system) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0b0b0c;
+    --color-surface: #18181b;
+    --color-surface-hover: #26272b;
+
+    --color-text: #e5e7eb;
+    --color-muted: #9ca3af;
+    --color-link: #93c5fd;
+
+    --color-border: #3f3f46;
+    --color-divider: #27272a;
+
+    --color-accent: #60a5fa;
+    --color-danger: #f87171;
+  }
+}
+
+/* High Contrast (black base + cyan borders/accents) */
+@media (prefers-contrast: more) {
+  :root {
+    --color-bg: #000000;
+    --color-surface: #000000;
+    --color-surface-hover: #0b0b0b;
+
+    --color-text: #ffffff;
+    --color-muted: #c7c7c7;
+    --color-link: #00ffff;
+
+    --color-border: #00ffff;   /* cyan borders */
+    --color-divider: #00ffff;  /* cyan dividers */
+
+    --color-accent: #00ffff;   /* focus/primary accent */
+    --color-danger: #ff4d4d;   /* vivid red for destructive */
+  }
+}
+
+/* Manual override: <html data-theme="dark"> */
+:root[data-theme="dark"] {
+  --color-bg: #0b0b0c;
+  --color-surface: #18181b;
+  --color-surface-hover: #26272b;
+
+  --color-text: #e5e7eb;
+  --color-muted: #9ca3af;
+  --color-link: #93c5fd;
+
+  --color-border: #3f3f46;
+  --color-divider: #27272a;
+
+  --color-accent: #60a5fa;
+  --color-danger: #f87171;
+}
+
+/* Manual override: <html data-theme="contrast"> */
+:root[data-theme="contrast"] {
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-hover: #0b0b0b;
+
+  --color-text: #ffffff;
+  --color-muted: #c7c7c7;
+  --color-link: #00ffff;
+
+  --color-border: #00ffff;
+  --color-divider: #00ffff;
+
+  --color-accent: #00ffff;
+  --color-danger: #ff4d4d;
+}
