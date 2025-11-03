@@ -1,12 +1,12 @@
 // @/lib/docs/sid.ts
 
+import type { DocType } from "@/lib/docs/docs";
+
 /**
  * SID 정렬 우선순위(타입).
  * 앞에 있을수록 우선.
  */
-export const ORDER = ["namespace","article","group","user","acl"] as const;
-
-export type DocType = typeof ORDER[number];
+export const ORDER = ["namespace","article","group","user","acl"] as DocType[];
 
 /**
  * SID에서 타입(prefix)을 추출한다.

@@ -54,7 +54,7 @@ export default function NamespaceEdit({ sid, namespace }: Props) {
   };
 
   return (
-    <article className="article">
+    <article className="documentview-container">
       <DocumentTitle sid={sid} />
 
       <section className={s.nsEditWrap}>

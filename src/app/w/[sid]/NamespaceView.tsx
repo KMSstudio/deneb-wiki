@@ -14,7 +14,7 @@ type Props = { namespace: Namespace | null; sid: string };
 export default async function NamespaceView({ namespace, sid }: Props) {
   if (!namespace) {
     return (
-      <article className="article">
+      <article className="documentview-container">
         <DocumentTitle sid={sid} />
         <DocumentNotFound sid={sid} />
       </article>
@@ -23,7 +23,7 @@ export default async function NamespaceView({ namespace, sid }: Props) {
 
   const items = sortSids(namespace.refs ?? []);
   return (
-    <article className="article">
+    <article className="documentview-container">
       <DocumentTitle sid={sid} />
       <NamespaceViewList sid={sid} items={items} />
     </article>

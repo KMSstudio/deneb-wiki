@@ -1,8 +1,9 @@
 // @/lib/docs.ts
 
-import { q, one } from "../db";
+import { q, one } from "@/lib/db";
 
 export type DocType = "article" | "namespace" | "user" | "group" | "acl";
+export const ALLOWED_DOCTYPES: DocType[] = ["namespace","article","group","user","acl"];
 
 /** Basic Documents Row Query */
 export type DocRaw = {

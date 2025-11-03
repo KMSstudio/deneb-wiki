@@ -1,0 +1,67 @@
+/* @/styles/list/documentlist.module.css */
+
+/* ===== LIST TITLE ===== */
+.listTitle{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:.75rem;margin:0 0 .75rem 0;padding-bottom:.25rem;
+  border-bottom:1px solid var(--color-divider)
+}
+.listH1{
+  margin:0;font-size:1.25rem;line-height:1.2;color:var(--color-text)
+}
+.listMeta{
+  display:flex;align-items:center;gap:.75rem;flex-wrap:wrap
+}
+.listCount{color:var(--color-muted)}
+.listActions{display:flex;gap:.5rem;align-items:center}
+.listActions a,.listActions button{
+  padding:.35rem .6rem;border:1px solid var(--color-border);
+  border-radius:.5rem;background:var(--color-surface);
+  color:var(--color-text);text-decoration:none;cursor:pointer
+}
+.listActions a:hover,.listActions button:hover{background:var(--color-surface-hover)}
+
+/* ===== DOCUMENT LIST ===== */
+.dlListWrap{margin-top:1rem}
+.dlListPage{list-style:none;margin:0;padding:0}
+.dlItem{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.25rem 0;border-bottom:1px solid var(--color-divider)
+}
+.dlItem:last-child{border-bottom:none}
+
+.dlMain{display:flex;align-items:baseline;gap:.5rem;flex:1 1 auto;flex-wrap:wrap}
+.dlLink{color:var(--color-link);text-decoration:none}
+.dlLink:hover{text-decoration:underline}
+.dlSub{color:var(--color-muted)}
+.dlMeta{color:var(--color-muted)}
+.dlRight{margin-left:auto;display:flex;gap:.5rem;align-items:center}
+
+.dlType{
+  font-family: ui-monospace,Menlo,Consolas,monospace;
+  font-size: .85rem;
+  color: var(--color-muted);
+}
+
+/* Pager (Namespace 스타일과 일관) */
+.dlPager{
+  display:flex;align-items:center;gap:.5rem;justify-content:center;
+  margin-top:1rem;flex-wrap:wrap
+}
+.dlPagerBtn,.dlPagerNum{
+  padding:.35rem .6rem;border:1px solid var(--color-border);
+  border-radius:.5rem;background:var(--color-surface);
+  color:var(--color-text);font-size:.9rem;text-decoration:none;cursor:pointer
+}
+.isDisabled{opacity:.5;pointer-events:none}
+.isActive{background:var(--color-surface-hover)}
+.dlPagerPages{display:flex;gap:.35rem}
+
+/* Empty state */
+.listEmpty{color:var(--color-muted)}
+
+/* ===== Responsive ===== */
+@media (max-width:640px){
+  .listH1{font-size:1.15rem}
+  .dlPagerBtn,.dlPagerNum{font-size:.85rem}
+}
