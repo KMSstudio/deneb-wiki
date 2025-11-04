@@ -3,7 +3,6 @@
 export const runtime = 'edge';
 import { ImageResponse } from 'next/og';
 
-// CACHE (HTTP-loaded)
 const fontCache = new Map();
 const HANGUL_RE = /[\u3130-\u318F\uAC00-\uD7A3]/;
 
