@@ -1,4 +1,4 @@
-// @/app/need/[doctype]/page.tsx
+// @/app/g/need/[doctype]/page.tsx
 
 import type { DocType } from "@/lib/docs/docs";
 import { listNeededDocuments, normalizeDoctype } from "@/app/g/doclist";
@@ -11,11 +11,11 @@ interface PageProps {
   params: { doctype: string };
 }
 
-/** SEO: 도큐먼트 타입에 따라 타이틀/디스크립션 생성 */
+/** SEO */
 export async function generateMetadata({ params }: PageProps) {
   const raw = (await params)?.doctype ?? "";
   const doctype = normalizeDoctype(raw);
-  const title = doctype ? `Missing refs · ${doctype}` : `Missing refs · Invalid type (${raw})`;
+  const title = doctype ? `Missing refs ${doctype}` : `Invalid type (${raw})`;
   return { title, description: `Unresolved references for type: ${doctype ?? raw}` };
 }
 
@@ -47,9 +47,7 @@ export default async function Page({ params }: PageProps) {
     return (
       <article className="documentlist-container">
         <DocumentListTitle title={`/need/${doctype}`} total={total} />
-        {entries.length === 0
-         ? (<p aria-live="polite" style={{ opacity: 0.7 }}> 모든 참조 대상 문서가 존재합니다. 🎉</p>)
-         : (<DocumentListContent entries={entries} ariaLabel="미해결 참조 목록" />)}
+        <DocumentListContent entries={entries} ariaLabel="미해결 참조 목록" />
       </article>
     );
   } catch (err) {

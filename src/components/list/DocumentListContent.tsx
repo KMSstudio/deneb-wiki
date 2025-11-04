@@ -58,12 +58,15 @@ export default function DocumentListContent({
           const disp = displayOf(it.sid);
           return (
             <li key={it.key} className={s.dlItem}>
-              <span className={s.dlType}>[{type}]</span>
-              <Link className={s.dlLink} href={it.href}>
-                {disp}
-              </Link>
-              {it.meta && <small className={s.dlMeta}>{it.meta}</small>}
-              {it.right && <div className={s.dlRight}>{it.right}</div>}
+              <div className={s.dlLeft}>
+                <span className={s.dlType}>[{type}]</span>
+                <Link className={s.dlLink} href={it.href}>{disp}</Link>
+              </div>
+
+              <div className={s.dlEnd}>
+                {it.meta && <small className={s.dlMeta}>{it.meta}</small>}
+                {it.right && <div className={s.dlRight}>{it.right}</div>}
+              </div>
             </li>
           );
         })}
