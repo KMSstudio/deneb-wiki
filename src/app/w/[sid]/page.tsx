@@ -1,5 +1,7 @@
 // @/app/w/[sid]/page.tsx
 
+// OpenGraph
+import type { Metadata } from "next";
 // Document
 import { getDocument } from "@/lib/docs/docs";
 import type { Document, Article, Namespace } from "@/lib/docs/docs";
@@ -13,6 +15,35 @@ import NamespaceView from "./NamespaceView";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
+
+/** OpenGraph */
+function buildOgURL(text: string): string {
+  const t = encodeURIComponent(text);
+  return `/og/${t}?w=1200&h=630&bg=%23ffffff&fg=%23111111`;
+}
+export async function generateMetadata(
+  { params }: { params: { sid: string } }
+): Promise<Metadata> {
+  const raw = decodeURIComponent(params.sid);
+  const sid = raw.includes(":") ? raw : `article:${raw}`;
+
+  const title = `${sid.split(":").slice(1).join(":")} - ${sid.split(":")[0]}`
+  const description = `Description of ${sid} in CSE Wiki`;
+  const og = buildOgURL(title);
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title, description, type: "article",
+      images: [{ url: og, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title, description, images: [og],
+    },
+  };
+}
 
 /** Check READ permission for given acl_id. */
 async function isReadAllowed(aclId: number | null): Promise<boolean> {
