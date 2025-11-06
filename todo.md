@@ -2,6 +2,7 @@
 
 ## KMSstudio
 
+- supabase 로 이전
 - OAuth2.0 회원가입기능 제작
 - 회원 이메일 인증
 - 헤더 디자인
