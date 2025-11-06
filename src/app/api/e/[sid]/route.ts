@@ -45,7 +45,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ sid: s
       }
     }
 
-    const acl_id_req = intOrNull(body?.acl_id);
+    const acl_id_req = intOrNull(body?.acl_id ?? current?.acl_id);
     const type = parsed.type as DocType;
     const name = parsed.name as string;
     let payload: SetDocument;
