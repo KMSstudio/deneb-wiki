@@ -12,7 +12,13 @@ import "@/styles/theme.css"
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-export const metadata: Metadata = { title: "CSE Wiki", description: "Department of Computer Science & Engineering Wiki" };
+export const metadata: Metadata = {
+  title: "CSE Wiki",
+  description: "Department of Computer Science & Engineering Wiki",
+  icons: {
+    icon: "/logo/icon.png"
+  },
+};
 export const revalidate = 0;
 
 /**
