@@ -9,7 +9,7 @@ import s from "@/styles/document/namespace.module.css";
 type Props = {
   sid: string;
   items: string[];
-  pageSize?: number;    // default: 144
+  pageSize?: number; // default: 144
   className?: string;
 };
 
@@ -55,11 +55,7 @@ export default function NamespaceListView({ /* sid, */ items, pageSize = 144, cl
       {/* === PAGER: only when multiple pages exist === */}
       {total > 1 && (
         <nav className={s.nsPager} aria-label="Pagination">
-          <button
-            className={s.nsPagerBtn + (page <= 1 ? ` ${s.isDisabled}` : "")}
-            onClick={prev}
-            disabled={page <= 1}
-          >
+          <button className={s.nsPagerBtn + (page <= 1 ? ` ${s.isDisabled}` : "")} onClick={prev} disabled={page <= 1}>
             Prev
           </button>
 
@@ -80,11 +76,7 @@ export default function NamespaceListView({ /* sid, */ items, pageSize = 144, cl
             })}
           </span>
 
-          <button
-            className={s.nsPagerBtn + (page >= total ? ` ${s.isDisabled}` : "")}
-            onClick={next}
-            disabled={page >= total}
-          >
+          <button className={s.nsPagerBtn + (page >= total ? ` ${s.isDisabled}` : "")} onClick={next} disabled={page >= total}>
             Next
           </button>
         </nav>

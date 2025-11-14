@@ -6,7 +6,7 @@ import type { DocType } from "@/lib/docs/docs";
  * SID 정렬 우선순위(타입).
  * 앞에 있을수록 우선.
  */
-export const ORDER = ["namespace","article","group","user","acl"] as DocType[];
+export const ORDER = ["namespace", "article", "group", "user", "acl"] as DocType[];
 
 /**
  * SID에서 타입(prefix)을 추출한다.
@@ -72,12 +72,16 @@ export const buildSid = (type: string, name: string): string | null => {
  * @returns Array.prototype.sort 규약
  */
 export const compareSid = (a: string, b: string): number => {
-  const ta = typeOf(a), tb = typeOf(b);
-  const ia = ORDER.indexOf(ta), ib = ORDER.indexOf(tb);
+  const ta = typeOf(a),
+    tb = typeOf(b);
+  const ia = ORDER.indexOf(ta),
+    ib = ORDER.indexOf(tb);
   if (ia !== ib) return ia - ib;
   const da = displayOf(a).toLocaleLowerCase();
   const db = displayOf(b).toLocaleLowerCase();
-  if (da < db) return -1; if (da > db) return 1; return 0;
+  if (da < db) return -1;
+  if (da > db) return 1;
+  return 0;
 };
 
 /**

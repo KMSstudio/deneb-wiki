@@ -21,8 +21,8 @@
   --color-divider: #e5e7eb;
 
   /* Accents */
-  --color-accent: #2563eb;   /* primary accent (links, focus) */
-  --color-danger: #b91c1c;   /* destructive */
+  --color-accent: #2563eb; /* primary accent (links, focus) */
+  --color-danger: #b91c1c; /* destructive */
 }
 
 /* Dark (system) */
@@ -55,11 +55,11 @@
     --color-muted: #c7c7c7;
     --color-link: #00ffff;
 
-    --color-border: #00ffff;   /* cyan borders */
-    --color-divider: #00ffff;  /* cyan dividers */
+    --color-border: #00ffff; /* cyan borders */
+    --color-divider: #00ffff; /* cyan dividers */
 
-    --color-accent: #00ffff;   /* focus/primary accent */
-    --color-danger: #ff4d4d;   /* vivid red for destructive */
+    --color-accent: #00ffff; /* focus/primary accent */
+    --color-danger: #ff4d4d; /* vivid red for destructive */
   }
 }
 

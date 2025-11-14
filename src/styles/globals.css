@@ -7,7 +7,7 @@
 .documentview-container {
   padding: 24px;
   background-color: var(--color-bg);
-  color: var(--color-text)
+  color: var(--color-text);
 }
 
 :root {

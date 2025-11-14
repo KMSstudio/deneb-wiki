@@ -21,13 +21,11 @@ function buildOgURL(text: string): string {
   const t = encodeURIComponent(text);
   return `/og/${t}?w=1200&h=630&bg=%23ffffff&fg=%23111111`;
 }
-export async function generateMetadata(
-  { params }: { params: { sid: string } }
-): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { sid: string } }): Promise<Metadata> {
   const raw = decodeURIComponent((await params).sid);
   const sid = raw.includes(":") ? raw : `article:${raw}`;
 
-  const title = `${sid.split(":").slice(1).join(":")} - ${sid.split(":")[0]}`
+  const title = `${sid.split(":").slice(1).join(":")} - ${sid.split(":")[0]}`;
   const description = `Description of ${sid} in CSE Wiki`;
   const og = buildOgURL(title);
 
@@ -36,12 +34,16 @@ export async function generateMetadata(
     metadataBase: new URL(process?.env?.PAGE_URL ?? "http://localhost:3000"),
     description,
     openGraph: {
-      title, description, type: "article",
+      title,
+      description,
+      type: "article",
       images: [{ url: og, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
-      title, description, images: [og],
+      title,
+      description,
+      images: [og],
     },
   };
 }

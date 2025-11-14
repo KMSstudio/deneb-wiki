@@ -28,17 +28,24 @@ export default function NamespaceEdit({ sid, namespace }: Props) {
   const onAdd = () => {
     const candidate = buildSid(type, name);
     if (!candidate) return;
-    if (items.includes(candidate)) { setName(""); return; }
-    setItems(prev => [...prev, candidate]);
+    if (items.includes(candidate)) {
+      setName("");
+      return;
+    }
+    setItems((prev) => [...prev, candidate]);
     setName("");
   };
-  const onRemove = (target: string) => setItems(prev => prev.filter(x => x !== target));
+  const onRemove = (target: string) => setItems((prev) => prev.filter((x) => x !== target));
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") { e.preventDefault(); onAdd(); }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onAdd();
+    }
   };
 
   const onSave = async () => {
-    setSaving(true); setStatus(null);
+    setSaving(true);
+    setStatus(null);
     try {
       const res = await fetch(`/api/e/${encodeURIComponent(sid)}`, {
         method: "POST",
@@ -50,7 +57,9 @@ export default function NamespaceEdit({ sid, namespace }: Props) {
       if (res.ok && js?.ok) router.push(`/w/${encodeURIComponent(sid)}`);
     } catch (err) {
       setStatus({ ok: false, error: "network_error", message: (err as Error)?.message });
-    } finally { setSaving(false); }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -60,7 +69,7 @@ export default function NamespaceEdit({ sid, namespace }: Props) {
       <section className={s.nsEditWrap}>
         <div className={s.nsEditRow}>
           <label className={s.nsEditLabel}>추가</label>
-          <select className={s.nsEditSelect} value={type} onChange={e=>setType(e.target.value)}>
+          <select className={s.nsEditSelect} value={type} onChange={(e) => setType(e.target.value)}>
             <option value="article">article</option>
             <option value="namespace">namespace</option>
             <option value="group">group</option>
@@ -72,31 +81,35 @@ export default function NamespaceEdit({ sid, namespace }: Props) {
             className={s.nsEditInput}
             placeholder="문서 이름 (또는 'type:name')"
             value={name}
-            onChange={e=>setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             onKeyDown={onKeyDown}
           />
-          <button className={s.nsEditBtn} onClick={onAdd}>추가</button>
+          <button className={s.nsEditBtn} onClick={onAdd}>
+            추가
+          </button>
         </div>
 
         {/* 목록 영역: 가능한 범위에서 View와 클래스 통일 → nsList* 사용 */}
         <ul className={s.nsListPage}>
-          {sorted.map(x=>(
+          {sorted.map((x) => (
             <li key={x} className={s.nsItem}>
               <span className={s.nsType}>[{typeOf(x)}]</span>
               <Link className={s.nsLink} href={`/w/${encodeURIComponent(x)}`}>
                 {displayOf(x)}
               </Link>
-              <button className={s.nsEditDel} onClick={()=>onRemove(x)}>삭제</button>
+              <button className={s.nsEditDel} onClick={() => onRemove(x)}>
+                삭제
+              </button>
             </li>
           ))}
-          {sorted.length===0 && <li className={s.nsEditEmpty}>연결된 문서가 없습니다.</li>}
+          {sorted.length === 0 && <li className={s.nsEditEmpty}>연결된 문서가 없습니다.</li>}
         </ul>
 
         <div className={s.nsEditActions}>
           <button className={s.nsEditSave} onClick={onSave} disabled={saving}>
             {saving ? "저장 중..." : "저장"}
           </button>
-          {status!==null ? <pre className={s.nsEditStatus}>{JSON.stringify(status,null,2)}</pre> : null}
+          {status !== null ? <pre className={s.nsEditStatus}>{JSON.stringify(status, null, 2)}</pre> : null}
         </div>
       </section>
     </article>

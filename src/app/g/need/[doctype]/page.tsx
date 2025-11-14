@@ -55,9 +55,7 @@ export default async function Page({ params }: PageProps) {
       <article className="documentlist-container">
         <DocumentListTitle title={`/need/${doctype}`} total={0} />
         <p style={{ color: "crimson" }}>목록을 불러오지 못했습니다.</p>
-        <pre style={{ padding: 12, background: "#0000000d", borderRadius: 8 }}>
-          {err instanceof Error ? err.message : String(err)}
-        </pre>
+        <pre style={{ padding: 12, background: "#0000000d", borderRadius: 8 }}>{err instanceof Error ? err.message : String(err)}</pre>
       </article>
     );
   }

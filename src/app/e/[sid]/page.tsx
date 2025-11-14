@@ -20,7 +20,7 @@ async function isUpdateAllowed(aclId: number | null): Promise<boolean> {
   return !!rud.update;
 }
 
-export default async function Page({ params }: { params: { sid: string }; }) {
+export default async function Page({ params }: { params: { sid: string } }) {
   const raw = decodeURIComponent((await params).sid);
   const sid = raw.includes(":") ? raw : `article:${raw}`;
 
@@ -32,13 +32,12 @@ export default async function Page({ params }: { params: { sid: string }; }) {
       return <Forbidden sid={sid} reason="no_update_permission" detail={{ acl_id: doc?.acl_id }} />;
     } else if (sid.startsWith("article:")) {
       return <ArticleEdit article={doc as Article | null} sid={sid} />;
-    } if (sid.startsWith("namespace:")) {
+    }
+    if (sid.startsWith("namespace:")) {
       return <NamespaceEdit namespace={doc as Namespace | null} sid={sid} />;
     }
 
-    return (
-      <pre style={{ padding: 24 }}> {JSON.stringify({ ok: false, error: "edit_not_supported", sid }, null, 2)} </pre>
-    );
+    return <pre style={{ padding: 24 }}> {JSON.stringify({ ok: false, error: "edit_not_supported", sid }, null, 2)} </pre>;
   } catch (err) {
     const payload = {
       ok: false,

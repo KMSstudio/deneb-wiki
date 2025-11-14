@@ -45,9 +45,9 @@ export default async function Page({ params }: PageProps) {
       }
       return {
         key: r.sid,
-        sid: r.sid,                                 // DocumentListContent가 display/type 계산
-        href: `/w/${encodeURIComponent(r.sid)}`,    // 이동 링크
-        meta,                                       // 우측 메타(선택)
+        sid: r.sid, // DocumentListContent가 display/type 계산
+        href: `/w/${encodeURIComponent(r.sid)}`, // 이동 링크
+        meta, // 우측 메타(선택)
       };
     });
 
@@ -62,9 +62,7 @@ export default async function Page({ params }: PageProps) {
       <article className="documentlist-container">
         <DocumentListTitle title={`/g/list/${doctype}`} total={0} />
         <p style={{ color: "crimson" }}>목록을 불러오지 못했습니다.</p>
-        <pre style={{ padding: 12, background: "#0000000d", borderRadius: 8 }}>
-          {err instanceof Error ? err.message : String(err)}
-        </pre>
+        <pre style={{ padding: 12, background: "#0000000d", borderRadius: 8 }}>{err instanceof Error ? err.message : String(err)}</pre>
       </article>
     );
   }

@@ -3,7 +3,7 @@
 import { q, one } from "@/lib/db";
 
 export type DocType = "article" | "namespace" | "user" | "group" | "acl";
-export const ALLOWED_DOCTYPES: DocType[] = ["namespace","article","group","user","acl"];
+export const ALLOWED_DOCTYPES: DocType[] = ["namespace", "article", "group", "user", "acl"];
 
 /** Basic Documents Row Query */
 export type DocRaw = {
@@ -34,7 +34,7 @@ type ArticleLike = Base & {
   toc: string;
 };
 
-export type Namespace = Base & { type: "namespace"; };
+export type Namespace = Base & { type: "namespace" };
 export type Article = ArticleLike & { type: "article"; namespaces: string[] };
 export type dUser = ArticleLike & { type: "user"; user_idx: number };
 export type dGroup = ArticleLike & { type: "group"; members: number[] };

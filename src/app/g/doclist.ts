@@ -8,7 +8,10 @@ import { q } from "@/lib/db";
 // Constants / Utilities
 // =====================
 
-export interface ListResult { rows: DocRaw[]; total: number }
+export interface ListResult {
+  rows: DocRaw[];
+  total: number;
+}
 export interface NeededDocRow {
   sid: string;
   type: DocType;
@@ -16,7 +19,10 @@ export interface NeededDocRow {
   ref_cnt: number;
   last_ref: Date | null;
 }
-export interface NeededListResult { rows: NeededDocRow[]; total: number }
+export interface NeededListResult {
+  rows: NeededDocRow[];
+  total: number;
+}
 
 /** Normalize string as DocType */
 export const normalizeDoctype = (t: string): DocType | null => {
@@ -61,9 +67,7 @@ const SQL_NEEDED_LIST_ALL = `
  * @param doctype 조회할 문서 타입
  * @returns rows + total(= rows.length)
  */
-export async function listDocumentsByType(
-  doctype: DocType,
-): Promise<ListResult> {
+export async function listDocumentsByType(doctype: DocType): Promise<ListResult> {
   const rows = await q<DocRaw>(SQL_LIST_BY_TYPE_ALL, [doctype]);
   return { rows, total: rows.length };
 }
@@ -87,9 +91,7 @@ export async function listDocumentsByType(
  * @param doctype 대상 도큐먼트 타입
  * @returns rows + total(= rows.length)
  */
-export async function listNeededDocuments(
-  doctype: DocType,
-): Promise<NeededListResult> {
+export async function listNeededDocuments(doctype: DocType): Promise<NeededListResult> {
   const rows = await q<NeededDocRow>(SQL_NEEDED_LIST_ALL, [doctype]);
   return { rows, total: rows.length };
 }

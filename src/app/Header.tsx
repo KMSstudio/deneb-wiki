@@ -4,26 +4,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "@/styles/header.module.css";
 
 function HeaderLeft() {
   const [isOpen, setIsOpen] = useState(false);
-  const toggleDropdown = () => setIsOpen(o => !o);
+  const toggleDropdown = () => setIsOpen((o) => !o);
 
   return (
     <div className={styles.left}>
       <Link href="/" className={styles.logo}>
-        <img
-          src="/logo/light.png"
-          alt="cse-wiki.com"
-          className={styles.logoImgDefault}
-        />
-        <img
-          src="/logo/light_underlined.png"
-          alt=""
-          aria-hidden="true"
-          className={styles.logoImgHover}
-        />
+        <Image src="/logo/light.png" alt="cse-wiki.com" width={96} height={48} className={styles.logoImgDefault} />
+        <Image src="/logo/light_underlined.png" alt="" aria-hidden="true" width={96} height={48} className={styles.logoImgHover} />
       </Link>
 
       <div className={styles.navItemWrap}>
@@ -31,21 +23,16 @@ function HeaderLeft() {
         <button className={styles.navItem}>최근 토론</button>
 
         <div className={styles.dropdown}>
-          <button
-            className={styles.navItem}
-            onClick={toggleDropdown}
-            aria-expanded={isOpen}
-            aria-haspopup="true"
-          >
+          <button className={styles.navItem} onClick={toggleDropdown} aria-expanded={isOpen} aria-haspopup="true">
             특수 기능 ▾
           </button>
 
           {isOpen && (
             <div className={styles.dropdownMenu}>
-              <a href="#">내용이 많은 문서</a>
-              <a href="/g/list/article">작성된 모든 문서</a>
-              <a href="/g/need/article">작성이 필요한 문서</a>
-              <a href="/g/random">Random Page</a>
+              <Link href="#">내용이 많은 문서</Link>
+              <Link href="/g/list/article">작성된 모든 문서</Link>
+              <Link href="/g/need/article">작성이 필요한 문서</Link>
+              <Link href="/g/random">Random Page</Link>
             </div>
           )}
         </div>
@@ -58,11 +45,7 @@ function HeaderRight() {
   return (
     <div className={styles.right}>
       <button className={styles.randomBtn}>🔀</button>
-      <input
-        type="text"
-        placeholder="여기에서 검색"
-        className={styles.search}
-      />
+      <input type="text" placeholder="여기에서 검색" className={styles.search} />
       <button className={styles.searchBtn}>🔍</button>
     </div>
   );

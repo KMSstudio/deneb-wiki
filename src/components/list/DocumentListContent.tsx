@@ -3,7 +3,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { typeOf, displayOf } from "@/lib/docs/sid"
+import { typeOf, displayOf } from "@/lib/docs/sid";
 import Link from "next/link";
 import s from "@/styles/list/documentlist.module.css";
 
@@ -27,12 +27,7 @@ type Props = {
  * Layout mirrors NamespaceViewList:
  * [doctype]  (displaySid)  ..........  meta  right
  */
-export default function DocumentListContent({
-  entries,
-  pageSize = 144,
-  className,
-  ariaLabel = "Document list",
-}: Props) {
+export default function DocumentListContent({ entries, pageSize = 144, className, ariaLabel = "Document list" }: Props) {
   const [page, setPage] = useState(1);
   const total = Math.max(1, Math.ceil(entries.length / pageSize));
 
@@ -60,7 +55,9 @@ export default function DocumentListContent({
             <li key={it.key} className={s.dlItem}>
               <div className={s.dlLeft}>
                 <span className={s.dlType}>[{type}]</span>
-                <Link className={s.dlLink} href={it.href}>{disp}</Link>
+                <Link className={s.dlLink} href={it.href}>
+                  {disp}
+                </Link>
               </div>
 
               <div className={s.dlEnd}>
@@ -76,11 +73,7 @@ export default function DocumentListContent({
       {/* === PAGER === */}
       {total > 1 && (
         <nav className={s.dlPager} aria-label="Pagination">
-          <button
-            className={s.dlPagerBtn + (page <= 1 ? ` ${s.isDisabled}` : "")}
-            onClick={prev}
-            disabled={page <= 1}
-          >
+          <button className={s.dlPagerBtn + (page <= 1 ? ` ${s.isDisabled}` : "")} onClick={prev} disabled={page <= 1}>
             Prev
           </button>
 
@@ -101,11 +94,7 @@ export default function DocumentListContent({
             })}
           </span>
 
-          <button
-            className={s.dlPagerBtn + (page >= total ? ` ${s.isDisabled}` : "")}
-            onClick={next}
-            disabled={page >= total}
-          >
+          <button className={s.dlPagerBtn + (page >= total ? ` ${s.isDisabled}` : "")} onClick={next} disabled={page >= total}>
             Next
           </button>
         </nav>

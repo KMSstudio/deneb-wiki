@@ -16,7 +16,11 @@ export default function DocumentListTitle({ title, total, right, className }: Pr
       <h1 className={s.listH1}>{title}</h1>
       <div className={s.listMeta}>
         {typeof total === "number" && <span className={s.listCount}>총 {total}건</span>}
-        {right && <nav className={s.listActions} aria-label="목록 작업">{right}</nav>}
+        {right && (
+          <nav className={s.listActions} aria-label="목록 작업">
+            {right}
+          </nav>
+        )}
       </div>
     </header>
   );
