@@ -1,19 +1,30 @@
 /* @/components/markdown.module.css */
 
-.markdown-body {
+/* Root wrapper for markdown content */
+.markdownRoot {
   box-sizing: border-box;
   min-width: 200px;
   max-width: 100%;
   margin: 0 auto;
   padding: 24px;
+
+  background-color: var(--color-surface);
+  color: var(--color-text);
 }
 
-.markdown :target {
+/* Anchor offset for fixed header */
+.markdownRoot :target {
   scroll-margin-top: 72px;
 }
 
-/* Code Block ``` ``` */
-.markdown pre {
+/* Override github-markdown default bg/text */
+.markdownRoot.markdown-body {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* Fenced code blocks ``` ``` */
+.markdownRoot pre {
   background-color: #161b22 !important;
   color: #e6edf3;
   border-radius: 6px;
@@ -21,10 +32,44 @@
   overflow-x: auto;
 }
 
-/* Normal Code ` ` */
-/* .markdown code {
-  background-color: #161b22 !important;
-  color: #e6edf3;
+/* Avoid extra bg from highlight.js */
+.markdownRoot pre code {
+  background: transparent;
+}
+
+/* Inline code `code` */
+.markdownRoot code {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text);
   border-radius: 4px;
   padding: 2px 4px;
-} */
+}
+
+/* ===== Tables ===== */
+
+.markdownRoot table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.markdownRoot thead tr {
+  background-color: var(--color-surface-hover);
+}
+
+.markdownRoot th,
+.markdownRoot td {
+  border: 1px solid var(--color-border);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.markdownRoot tbody tr {
+  background-color: var(--color-surface);
+}
+
+.markdownRoot tbody tr:nth-child(2n) {
+  background-color: var(--color-surface-hover);
+}

@@ -132,7 +132,7 @@ export default function Markdown({ content, className }: MarkdownProps): JSX.Ele
   }, [content]);
 
   return (
-    <div ref={ref} className={`${className ?? "markdown-body"} ${styles.markdown}`}>
+    <div ref={ref} className={`${styles.markdownRoot} ${className ?? "markdown-body"}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[
