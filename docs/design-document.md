@@ -9,18 +9,16 @@ nid, 문서번호. 1부터 incremental 하는 값
 acl, 문서에 적용되는 acl의 sid. 만약 빈 문자열 또는 null 일 경우, acl 검사를 하지 않음
 mtime, 마지막으로 modifyed 된 시간
 ctime, 생성 시간
-nlink*, document를 참조하고 있는 document의 수
-\_link*, document를 참조하고 있는 document의 sid 나열. ; seperated value
-nref*, document가 참조하고 있는 document의 수
-\_ref*, document가 참조하고 있는 document의 sid 나열. ; seperated value
+link*, document를 참조하고 있는 document의 sid 나열. ; seperated value
+ref*, document가 참조하고 있는 document의 sid 나열. ; seperated value
 
 document는 다른 document를 참조할 수 있다.
 src: source의 sid
 dst: destination의 sid
 ctime: 생성 시간
 
-\_link 에는 존재하는 sid 만이 존재한다.
-\_ref 에는 아직 존재하지 않는 sid가 존재할 수 있다.
+link 에는 존재하는 sid 만이 존재한다.
+ref 에는 아직 존재하지 않는 sid가 존재할 수 있다.
 
 모든 document는 삭제될 때, 자신이 참조하고 있는 document 들의 link를 수정해야 한다. 따라서, 모든 document 는 반드시 존재하는 document 에게 참조된다.
 모든 document는 삭제될 때, 자신을 참조하고 있는 document 가 있다면 자신을 [namespace:필요한 ${type}]에 등록한다.

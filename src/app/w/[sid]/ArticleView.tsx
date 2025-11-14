@@ -14,7 +14,7 @@ import "@/styles/document/article.css";
 export default async function ArticleView({ article, sid }: { article: Article | null; sid: string }) {
   if (!article) {
     return (
-      <article className="article">
+      <article className="documentview-container">
         <DocumentTitle sid={sid} />
         <DocumentNotFound sid={sid} />
       </article>
@@ -22,7 +22,7 @@ export default async function ArticleView({ article, sid }: { article: Article |
   }
 
   return (
-    <article className="article">
+    <article className="documentview-container">
       <DocumentTitle sid={sid} />
       <section className="article-content">
         <Markdown content={makeArticleContent(article.content_md, article.toc)} />

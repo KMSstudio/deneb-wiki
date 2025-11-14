@@ -24,7 +24,7 @@ function buildOgURL(text: string): string {
 export async function generateMetadata(
   { params }: { params: { sid: string } }
 ): Promise<Metadata> {
-  const raw = decodeURIComponent(params.sid);
+  const raw = decodeURIComponent((await params).sid);
   const sid = raw.includes(":") ? raw : `article:${raw}`;
 
   const title = `${sid.split(":").slice(1).join(":")} - ${sid.split(":")[0]}`
@@ -33,6 +33,7 @@ export async function generateMetadata(
 
   return {
     title,
+    metadataBase: new URL(process?.env?.PAGE_URL ?? "http://localhost:3000"),
     description,
     openGraph: {
       title, description, type: "article",
