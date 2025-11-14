@@ -13,7 +13,17 @@ function HeaderLeft() {
   return (
     <div className={styles.left}>
       <Link href="/" className={styles.logo}>
-        cse-wiki.com
+        <img
+          src="/logo/light.png"
+          alt="cse-wiki.com"
+          className={styles.logoImgDefault}
+        />
+        <img
+          src="/logo/light_underlined.png"
+          alt=""
+          aria-hidden="true"
+          className={styles.logoImgHover}
+        />
       </Link>
 
       <div className={styles.navItemWrap}>

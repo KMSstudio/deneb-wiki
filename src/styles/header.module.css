@@ -25,15 +25,34 @@
 }
 
 .logo {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-right: 20px;
-  text-decoration: none;
+  width: 96px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logo:hover {
-  text-decoration: underline;
+.logo img {
+  margin-top: 4px;
+  width: 96px;
+  height: 48px;
+}
+
+/* 새로 추가 */
+.logoImgDefault {
+  display: block;
+}
+
+.logoImgHover {
+  display: none;
+}
+
+.logo:hover .logoImgDefault {
+  display: none;
+}
+
+.logo:hover .logoImgHover {
+  display: block;
 }
 
 .navItemWrap {
