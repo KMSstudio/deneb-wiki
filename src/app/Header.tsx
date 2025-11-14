@@ -33,8 +33,8 @@ function HeaderLeft() {
           {isOpen && (
             <div className={styles.dropdownMenu}>
               <a href="#">내용이 많은 문서</a>
-              <a href="#">작성이 필요한 문서</a>
-              <a href="#">Random Page</a>
+              <a href="/g/need/article">작성이 필요한 문서</a>
+              <a href="/g/random">Random Page</a>
             </div>
           )}
         </div>
